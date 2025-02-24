@@ -55,7 +55,7 @@ const Signup: React.FC = () => {
       await setDoc(doc(db, `workspaces/${workspaceId}/users`, user.uid), {
         email: user.email,
         uid: user.uid,
-        role: 'member',
+        role: 'user',
       });
       navigate('/dashboard');
     } catch (error: any) {

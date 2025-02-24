@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface Workspace {
   id: string;
@@ -43,6 +43,30 @@ const WorkspaceList: React.FC = () => {
     fetchWorkspaces();
   }, []);
 
+  const handleDelete = async (workspaceId: string) => {
+    if (window.confirm('このワークスペースを削除してもよろしいですか？')) {
+      try {
+        await deleteDoc(doc(db, 'workspaces', workspaceId));
+        setWorkspaces(workspaces.filter(workspace => workspace.id !== workspaceId));
+      } catch (error: any) {
+        setError('ワークスペースの削除に失敗しました。');
+      }
+    }
+  };
+
+  const handleRegenerateInvite = async (workspaceId: string) => {
+    try {
+      const inviteRef = await addDoc(collection(db, 'workspaceInvites'), {
+        workspaceId: workspaceId,
+        createdAt: serverTimestamp(),
+      });
+      const newInviteLink = `${window.location.origin}/invite/${inviteRef.id}`;
+      alert(`新しい招待リンク: ${newInviteLink}`);
+    } catch (error: any) {
+      setError('招待リンクの再生成に失敗しました。');
+    }
+  };
+
   return (
     <div>
       <h2>ワークスペース一覧</h2>
@@ -57,6 +81,7 @@ const WorkspaceList: React.FC = () => {
             <th>作成日</th>
             <th>招待用URL生成日</th>
             <th>招待用URL</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -72,6 +97,10 @@ const WorkspaceList: React.FC = () => {
                 <a href={`${window.location.origin}/invite/${workspace.id}`}>
                   {`${window.location.origin}/invite/${workspace.id}`}
                 </a>
+              </td>
+              <td>
+                <button onClick={() => handleDelete(workspace.id)}>削除</button>
+                <button onClick={() => handleRegenerateInvite(workspace.id)}>招待用URL再生成</button>
               </td>
             </tr>
           ))}
