@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import WorkspaceSwitcher from './WorkspaceSwitcher';
 
 const Header: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -30,6 +31,7 @@ const Header: React.FC = () => {
         <div>
           <p>Email: {user.email}</p>
           <p>UID: {user.uid}</p>
+          <WorkspaceSwitcher />
         </div>
       )}
     </header>

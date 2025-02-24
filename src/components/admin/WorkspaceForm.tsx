@@ -6,6 +6,7 @@ const WorkspaceForm: React.FC = () => {
   const [workspaceName, setWorkspaceName] = useState('');
   const [representativeName, setRepresentativeName] = useState('');
   const [representativeEmail, setRepresentativeEmail] = useState('');
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,12 +14,21 @@ const WorkspaceForm: React.FC = () => {
     e.preventDefault();
     const domain = representativeEmail.split('@')[1];
     try {
-      await addDoc(collection(db, 'workspaces'), {
+      // ワークスペースを追加
+      const workspaceRef = await addDoc(collection(db, 'workspaces'), {
         name: workspaceName,
         representativeName: representativeName,
         representativeEmail: representativeEmail,
         domain: domain,
       });
+
+      // 招待リンクを生成
+      const inviteRef = await addDoc(collection(db, 'workspaceInvites'), {
+        workspaceId: workspaceRef.id,
+        createdAt: new Date(),
+      });
+
+      setInviteLink(`${window.location.origin}/invite/${inviteRef.id}`);
       setMessage('ワークスペースが追加されました。');
       setError(null);
       setWorkspaceName('');
@@ -63,6 +73,7 @@ const WorkspaceForm: React.FC = () => {
         </div>
         <button type="submit">追加</button>
       </form>
+      {inviteLink && <p>招待リンク: <a href={inviteLink}>{inviteLink}</a></p>}
       {message && <p>{message}</p>}
       {error && <p>{error}</p>}
     </div>

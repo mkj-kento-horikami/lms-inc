@@ -11,6 +11,7 @@ import UserProfile from './user/UserProfile';
 import UserDashboard from './user/UserDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import InstructorDashboard from './instructor/InstructorDashboard';
+import InvitePage from './InvitePage';
 import Header from './Header';
 import '../styles/App.css'; // パスが正しいか確認
 
@@ -43,6 +44,7 @@ const App: React.FC = () => {
             <Route path="/logout" element={<Logout />} />
             <Route path="/password-reset" element={<PasswordReset />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/invite/:inviteId" element={<InvitePage />} />
             {userRole === 'admin' && <Route path="/dashboard" element={<AdminDashboard />} />}
             {userRole === 'user' && <Route path="/dashboard" element={<UserDashboard />} />}
             {userRole === 'instructor' && <Route path="/dashboard" element={<InstructorDashboard />} />}

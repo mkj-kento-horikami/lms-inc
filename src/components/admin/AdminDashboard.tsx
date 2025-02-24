@@ -4,6 +4,8 @@ import LearningResourceForm from './LearningResourceForm';
 import LearningResourceList from './LearningResourceList';
 import LearningLogList from './LearningLogList';
 import WorkspaceForm from './WorkspaceForm';
+import WorkspaceInviteForm from './WorkspaceInviteForm';
+import WorkspaceList from './WorkspaceList';
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -15,6 +17,7 @@ const AdminDashboard: React.FC = () => {
       <LearningResourceList />
       <LearningLogList />
       <WorkspaceForm />
+      <WorkspaceList />
     </div>
   );
 };
