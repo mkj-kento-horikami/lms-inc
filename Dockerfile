@@ -1,23 +1,22 @@
-# ベースイメージとしてNode.jsを使用
-FROM node:14
+# ベースイメージを最新のLTSバージョンに変更
+FROM node:18-alpine
 
-# 作業ディレクトリを設定
+# 作業ディレクトリを作成
 WORKDIR /app
 
-# package.jsonとpackage-lock.jsonをコピー
-COPY package*.json ./
-
 # 依存関係をインストール
-RUN npm install
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --legacy-peer-deps
 
 # アプリケーションのソースコードをコピー
 COPY . .
 
-# Babelのバージョンを更新
-RUN npm install @babel/core@latest
-
-# アプリケーションをビルド
+# ビルド
 RUN npm run build
+
+# アプリケーションを公開するポートを指定
+EXPOSE 3000
 
 # アプリケーションを起動
 CMD ["npm", "start"]
