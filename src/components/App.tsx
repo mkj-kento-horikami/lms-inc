@@ -39,12 +39,11 @@ const App: React.FC = () => {
         <Header />
         <main>
           <Routes>
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/invite/:inviteId" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/password-reset" element={<PasswordReset />} />
             <Route path="/profile" element={<UserProfile />} />
-            <Route path="/invite/:inviteId" element={<InvitePage />} />
             {userRole === 'admin' && <Route path="/dashboard" element={<AdminDashboard />} />}
             {userRole === 'user' && <Route path="/dashboard" element={<UserDashboard />} />}
             {userRole === 'instructor' && <Route path="/dashboard" element={<InstructorDashboard />} />}

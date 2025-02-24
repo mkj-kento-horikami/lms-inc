@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { db } from '../../firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const WorkspaceForm: React.FC = () => {
   const [workspaceName, setWorkspaceName] = useState('');
@@ -20,12 +20,13 @@ const WorkspaceForm: React.FC = () => {
         representativeName: representativeName,
         representativeEmail: representativeEmail,
         domain: domain,
+        createdAt: serverTimestamp(),
       });
 
       // 招待リンクを生成
       const inviteRef = await addDoc(collection(db, 'workspaceInvites'), {
         workspaceId: workspaceRef.id,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
 
       setInviteLink(`${window.location.origin}/invite/${inviteRef.id}`);

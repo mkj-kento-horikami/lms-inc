@@ -8,6 +8,8 @@ interface Workspace {
   representativeName: string;
   representativeEmail: string;
   domain: string;
+  createdAt: string;
+  inviteCreatedAt: string;
 }
 
 const WorkspaceList: React.FC = () => {
@@ -18,12 +20,19 @@ const WorkspaceList: React.FC = () => {
     const fetchWorkspaces = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'workspaces'));
-        const workspaceData: Workspace[] = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          name: doc.data().name,
-          representativeName: doc.data().representativeName,
-          representativeEmail: doc.data().representativeEmail,
-          domain: doc.data().domain,
+        const workspaceData: Workspace[] = await Promise.all(querySnapshot.docs.map(async doc => {
+          const workspace = doc.data();
+          const inviteSnapshot = await getDocs(collection(db, 'workspaceInvites'));
+          const inviteDoc = inviteSnapshot.docs.find(invite => invite.data().workspaceId === doc.id);
+          return {
+            id: doc.id,
+            name: workspace.name,
+            representativeName: workspace.representativeName,
+            representativeEmail: workspace.representativeEmail,
+            domain: workspace.domain,
+            createdAt: workspace.createdAt ? workspace.createdAt.toDate().toLocaleString() : 'N/A',
+            inviteCreatedAt: inviteDoc ? inviteDoc.data().createdAt.toDate().toLocaleString() : 'N/A',
+          };
         }));
         setWorkspaces(workspaceData);
       } catch (error: any) {
@@ -45,6 +54,8 @@ const WorkspaceList: React.FC = () => {
             <th>代表者名</th>
             <th>代表メール</th>
             <th>ドメイン</th>
+            <th>作成日</th>
+            <th>招待用URL生成日</th>
             <th>招待用URL</th>
           </tr>
         </thead>
@@ -55,6 +66,8 @@ const WorkspaceList: React.FC = () => {
               <td>{workspace.representativeName}</td>
               <td>{workspace.representativeEmail}</td>
               <td>{workspace.domain}</td>
+              <td>{workspace.createdAt}</td>
+              <td>{workspace.inviteCreatedAt}</td>
               <td>
                 <a href={`${window.location.origin}/invite/${workspace.id}`}>
                   {`${window.location.origin}/invite/${workspace.id}`}
