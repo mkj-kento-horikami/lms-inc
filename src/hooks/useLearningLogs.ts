@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { db, auth } from '../firebaseConfig';
 import { collection, getDocs, query, where, orderBy, addDoc, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -17,7 +17,7 @@ const useLearningLogs = (workspacePath: string = '', userId: string = '') => {
   const [error, setError] = useState<string>('');
   const [user, setUser] = useState<any>(null);
 
-  const fetchLogs = async (currentUserId: string) => {
+  const fetchLogs = useCallback(async (currentUserId: string) => {
     try {
       let logsQuery;
       if (workspacePath) {
@@ -40,7 +40,7 @@ const useLearningLogs = (workspacePath: string = '', userId: string = '') => {
     } catch (error: any) {
       setError(error.message);
     }
-  };
+  }, [workspacePath]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -51,7 +51,7 @@ const useLearningLogs = (workspacePath: string = '', userId: string = '') => {
     });
 
     return () => unsubscribe();
-  }, [workspacePath, userId, fetchLogs]); // 'fetchLogs'を依存関係に追加
+  }, [workspacePath, userId, fetchLogs]);
 
   const handleLinkClick = async (log: LearningLog) => {
     try {
