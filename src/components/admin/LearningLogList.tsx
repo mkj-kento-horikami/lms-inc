@@ -1,40 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { db } from '../../firebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
-
-interface LearningLog {
-  id: string;
-  userId: string;
-  userEmail: string;
-  title: string;
-  url: string;
-  clickedAt: any;
-}
+import React from 'react';
+import useLearningLogs from '../../hooks/useLearningLogs';
 
 const LearningLogList: React.FC = () => {
-  const [logs, setLogs] = useState<LearningLog[]>([]);
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'learningLogs'));
-        const logsData: LearningLog[] = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          userId: doc.data().userId,
-          userEmail: doc.data().userEmail,
-          title: doc.data().title,
-          url: doc.data().url,
-          clickedAt: doc.data().clickedAt.toDate(),
-        }));
-        setLogs(logsData);
-      } catch (error: any) {
-        setError(error.message);
-      }
-    };
-
-    fetchLogs();
-  }, []);
+  const { logs, error, handleLinkClick } = useLearningLogs();
 
   return (
     <div>
@@ -56,7 +24,16 @@ const LearningLogList: React.FC = () => {
               <td>{log.userId}</td>
               <td>{log.userEmail}</td>
               <td>{log.title}</td>
-              <td><a href={log.url} target="_blank" rel="noopener noreferrer">{log.url}</a></td>
+              <td>
+                <a
+                  href={log.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleLinkClick(log)}
+                >
+                  {log.url}
+                </a>
+              </td>
               <td>{log.clickedAt.toString()}</td>
             </tr>
           ))}

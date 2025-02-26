@@ -52,7 +52,7 @@ const LearningResourceList: React.FC = () => {
         lastClickedAt: serverTimestamp(),
       });
 
-      // 学習記録をFirestoreに保存
+      // 学習ログを追加
       await addDoc(collection(db, 'learningLogs'), {
         userId: user.uid,
         userEmail: user.email,
