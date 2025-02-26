@@ -4,13 +4,14 @@ import { auth, db } from '../firebaseConfig';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
-const Signup: React.FC = () => {
+const SignUp: React.FC = () => {
   const { inviteId } = useParams<{ inviteId: string }>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [workspaceName, setWorkspaceName] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
+  const [role, setRole] = useState('user'); // デフォルトのロールを設定
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const Signup: React.FC = () => {
     return () => checkAuth();
   }, [inviteId, navigate]);
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!workspaceId) {
       setError('ワークスペースが指定されていません。');
@@ -52,11 +53,21 @@ const Signup: React.FC = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Firestoreのusersコレクションにユーザー情報を追加
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        role: role,
+        createdAt: new Date(),
+      });
+
+      // ワークスペースのサブコレクションにもユーザー情報を追加（必要に応じて）
       await setDoc(doc(db, `workspaces/${workspaceId}/users`, user.uid), {
         email: user.email,
-        uid: user.uid,
-        role: 'user',
+        role: role,
+        createdAt: new Date(),
       });
+
       navigate('/dashboard');
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
@@ -73,9 +84,9 @@ const Signup: React.FC = () => {
 
   return (
     <div>
-      <h2>Signup</h2>
+      <h2>Sign Up</h2>
       {workspaceName ? (
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleSignUp}>
           <div>
             <label>ワークスペース</label>
             <input type="text" value={workspaceName} readOnly />
@@ -98,7 +109,15 @@ const Signup: React.FC = () => {
               required
             />
           </div>
-          <button type="submit">Signup</button>
+          <div>
+            <label>Role</label>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="user">User</option>
+              <option value="instructor">Instructor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit">Sign Up</button>
         </form>
       ) : (
         <p>{error}</p>
@@ -107,4 +126,4 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup;
+export default SignUp;
