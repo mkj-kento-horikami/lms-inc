@@ -11,7 +11,6 @@ import UserProfile from './user/UserProfile';
 import UserDashboard from './user/UserDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import InstructorDashboard from './instructor/InstructorDashboard';
-import InvitePage from './InvitePage';
 import Header from './Header';
 import '../styles/App.css'; // パスが正しいか確認
 
