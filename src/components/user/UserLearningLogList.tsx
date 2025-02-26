@@ -2,7 +2,8 @@ import React from 'react';
 import useLearningLogs from '../../hooks/useLearningLogs';
 
 const UserLearningLogList: React.FC = () => {
-  const { logs, error, user, handleLinkClick } = useLearningLogs('');
+  const { user } = useLearningLogs(); // まずuserを取得
+  const { logs, error, handleLinkClick } = useLearningLogs('', user?.uid); // userが取得された後にuseLearningLogsを呼び出す
 
   return (
     <div>

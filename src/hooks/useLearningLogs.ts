@@ -51,7 +51,7 @@ const useLearningLogs = (workspacePath: string = '', userId: string = '') => {
     });
 
     return () => unsubscribe();
-  }, [workspacePath, userId]);
+  }, [workspacePath, userId, fetchLogs]); // 'fetchLogs'を依存関係に追加
 
   const handleLinkClick = async (log: LearningLog) => {
     try {
