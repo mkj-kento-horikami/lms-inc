@@ -1,43 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWorkspace } from '../contexts/WorkspaceContext';
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../firebaseConfig';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  Container,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  SelectChangeEvent,
+} from '@mui/material';
 
 const WorkspaceSelector: React.FC = () => {
-  const { workspaces, isAdmin, setSelectedWorkspace } = useWorkspace();
+  const { currentUser } = useAuth();
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('');
   const navigate = useNavigate();
 
-  console.log('WorkspaceSelector props:', { workspaces, isAdmin }); // デバッグ用ログ
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      if (currentUser) {
+        const q = query(collection(db, 'users'), where('id', '==', currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        const userData = querySnapshot.docs[0].data();
+        setWorkspaces(userData.workspaces);
 
-  const handleSelectWorkspace = (workspaceId: string, role: string) => {
-    const selectedWorkspace = workspaces.find(ws => ws.workspaceId === workspaceId) || { workspaceId, name: '', role };
-    setSelectedWorkspace(selectedWorkspace);
-    navigate('/dashboard');
+        if (userData.workspaces.length === 1) {
+          navigate(`/workspace/${userData.workspaces[0].workspaceId}`);
+        }
+      }
+    };
+
+    fetchWorkspaces();
+  }, [currentUser, navigate]);
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setSelectedWorkspace(event.target.value as string);
+  };
+
+  const handleSubmit = () => {
+    if (selectedWorkspace) {
+      navigate(`/workspace/${selectedWorkspace}`);
+    }
   };
 
   return (
-    <div>
-      <h2>Workspace Selector</h2>
-      <ul>
-        {workspaces.length > 0 ? (
-          workspaces.map(workspace => (
-            <li key={workspace.workspaceId}>
-              <button onClick={() => handleSelectWorkspace(workspace.workspaceId, workspace.role)}>
-                {workspace.name}
-              </button>
-            </li>
-          ))
-        ) : (
-          <p>No workspaces available</p>
-        )}
-        {isAdmin && (
-          <li>
-            <button onClick={() => handleSelectWorkspace('', 'admin')}>
-              Login as Admin
-            </button>
-          </li>
-        )}
-      </ul>
-    </div>
+    <Container>
+      <Typography variant="h4" gutterBottom>Workspace Selector</Typography>
+      <FormControl fullWidth>
+        <InputLabel>Workspace</InputLabel>
+        <Select value={selectedWorkspace} onChange={handleChange}>
+          {workspaces.map((workspace) => (
+            <MenuItem key={workspace.workspaceId} value={workspace.workspaceId}>
+              {workspace.workspaceId}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        disabled={!selectedWorkspace}
+        style={{ marginTop: '16px' }}
+      >
+        Enter Workspace
+      </Button>
+    </Container>
   );
 };
 

@@ -1,0 +1,12 @@
+.table-head-cell {
+  color: #edededf0; /* 薄いグレー */
+  background-color: #fafafaf0; /* 薄いグレー */
+}
+
+.table-row {
+  height: 20px; /* 縦の高さをさらに小さく */
+}
+
+.icon-button {
+  padding: 4px; /* アイコンボタンのパディングを小さく */
+}

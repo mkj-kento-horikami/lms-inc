@@ -28,8 +28,10 @@ import {
   FormControl,
   Box,
   Grid,
+  TableSortLabel,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import '../../styles.css';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -42,6 +44,8 @@ const UserManagement: React.FC = () => {
   const [workspaces, setWorkspaces] = useState<string[]>([]);
   const [newWorkspace, setNewWorkspace] = useState<string>('');
   const [newRole, setNewRole] = useState<string>('user');
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [orderBy, setOrderBy] = useState<keyof User>('name');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -142,6 +146,23 @@ const UserManagement: React.FC = () => {
       setEditingUser({ ...editingUser, workspaces: newWorkspaces });
     }
   };
+
+  const handleRequestSort = (property: keyof User) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const sortedUsers = [...users].sort((a, b) => {
+    const aValue = a[orderBy];
+    const bValue = b[orderBy];
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return (order === 'asc' ? 1 : -1) * aValue.localeCompare(bValue);
+    }
+
+    return 0;
+  });
 
   return (
     <Container>
@@ -288,23 +309,49 @@ const UserManagement: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'id'}
+                  direction={orderBy === 'id' ? order : 'asc'}
+                  onClick={() => handleRequestSort('id')}
+                >
+                  ID
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'name'}
+                  direction={orderBy === 'name' ? order : 'asc'}
+                  onClick={() => handleRequestSort('name')}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'email'}
+                  direction={orderBy === 'email' ? order : 'asc'}
+                  onClick={() => handleRequestSort('email')}
+                >
+                  Email
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">Role</TableCell>
+              <TableCell className="table-head-cell">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {adminUsers.map(user => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className="table-row">
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>Admin</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
-                  <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
+                    <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -317,23 +364,49 @@ const UserManagement: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'id'}
+                  direction={orderBy === 'id' ? order : 'asc'}
+                  onClick={() => handleRequestSort('id')}
+                >
+                  ID
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'name'}
+                  direction={orderBy === 'name' ? order : 'asc'}
+                  onClick={() => handleRequestSort('name')}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">
+                <TableSortLabel
+                  active={orderBy === 'email'}
+                  direction={orderBy === 'email' ? order : 'asc'}
+                  onClick={() => handleRequestSort('email')}
+                >
+                  Email
+                </TableSortLabel>
+              </TableCell>
+              <TableCell className="table-head-cell">Role</TableCell>
+              <TableCell className="table-head-cell">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {unassignedUsers.map(user => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className="table-row">
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
-                  <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
+                    <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -349,23 +422,49 @@ const UserManagement: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell className="table-head-cell">
+                    <TableSortLabel
+                      active={orderBy === 'id'}
+                      direction={orderBy === 'id' ? order : 'asc'}
+                      onClick={() => handleRequestSort('id')}
+                    >
+                      ID
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell className="table-head-cell">
+                    <TableSortLabel
+                      active={orderBy === 'name'}
+                      direction={orderBy === 'name' ? order : 'asc'}
+                      onClick={() => handleRequestSort('name')}
+                    >
+                      Name
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell className="table-head-cell">
+                    <TableSortLabel
+                      active={orderBy === 'email'}
+                      direction={orderBy === 'email' ? order : 'asc'}
+                      onClick={() => handleRequestSort('email')}
+                    >
+                      Email
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell className="table-head-cell">Role</TableCell>
+                  <TableCell className="table-head-cell">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {workspaceUsers[workspaceId].map(user => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.id} className="table-row">
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
-                      <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
-                      <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
+                        <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

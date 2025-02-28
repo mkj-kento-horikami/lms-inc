@@ -1,129 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+} from '@mui/material';
 
-const SignUp: React.FC = () => {
+const Signup: React.FC = () => {
   const { inviteId } = useParams<{ inviteId: string }>();
+  const [searchParams] = useSearchParams();
+  const workspaceId = searchParams.get('workspaceId');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [workspaceName, setWorkspaceName] = useState<string | null>(null);
-  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
-  const [error, setError] = useState<string>('');
-  const [role, setRole] = useState('user'); // デフォルトのロールを設定
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/dashboard');
+    const validateInvite = async () => {
+      if (!inviteId || !workspaceId) {
+        setError('無効なリンクです');
+        return;
       }
-    });
 
-    const fetchWorkspace = async () => {
-      if (inviteId) {
-        const inviteDoc = await getDoc(doc(db, 'workspaceInvites', inviteId));
-        if (inviteDoc.exists()) {
-          const workspaceId = inviteDoc.data()?.workspaceId;
-          setWorkspaceId(workspaceId);
-          const workspaceDoc = await getDoc(doc(db, 'workspaces', workspaceId));
-          if (workspaceDoc.exists()) {
-            setWorkspaceName(workspaceDoc.data()?.name);
-          } else {
-            setError('無効なワークスペースです。');
-          }
-        } else {
-          setError('無効な招待リンクです。');
-        }
+      const inviteDoc = await getDoc(doc(db, 'invites', inviteId));
+      if (!inviteDoc.exists()) {
+        setError('無効なリンクです');
       }
     };
 
-    fetchWorkspace();
+    validateInvite();
+  }, [inviteId, workspaceId]);
 
-    return () => checkAuth();
-  }, [inviteId, navigate]);
-
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!workspaceId) {
-      setError('ワークスペースが指定されていません。');
-      return;
-    }
+    setError(null);
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const userId = userCredential.user.uid;
 
-      // Firestoreのusersコレクションにユーザー情報を追加
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        role: role,
-        createdAt: new Date(),
+      await setDoc(doc(db, 'users', userId), {
+        id: userId,
+        name,
+        email,
+        workspaces: [{ workspaceId, role: 'user' }],
       });
 
-      // ワークスペースのサブコレクションにもユーザー情報を追加（必要に応じて）
-      await setDoc(doc(db, `workspaces/${workspaceId}/users`, user.uid), {
-        email: user.email,
-        role: role,
-        createdAt: new Date(),
-      });
-
-      navigate('/dashboard');
-    } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        setError('このメールアドレスは既に使用されています。');
-      } else if (error.code === 'auth/too-many-requests') {
-        setError('リクエストが多すぎます。しばらくしてから再試行してください。');
-      } else if (error.code === 'auth/invalid-credential') {
-        setError('無効な資格情報です。');
+      setSuccess(true);
+      navigate(`/workspace/${workspaceId}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError(error.message);
+        setError('サインアップ中にエラーが発生しました');
       }
     }
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      {workspaceName ? (
-        <form onSubmit={handleSignUp}>
-          <div>
-            <label>ワークスペース</label>
-            <input type="text" value={workspaceName} readOnly />
-          </div>
-          <div>
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Role</label>
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="user">User</option>
-              <option value="instructor">Instructor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <button type="submit">Sign Up</button>
-        </form>
+    <Container>
+      <Typography variant="h4" gutterBottom>Signup</Typography>
+      {error && <Alert severity="error">{error}</Alert>}
+      {success ? (
+        <Alert severity="success">サインアップに成功しました！</Alert>
       ) : (
-        <p>{error}</p>
+        <form onSubmit={handleSignup}>
+          <TextField
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary">Signup</Button>
+        </form>
       )}
-    </div>
+    </Container>
   );
 };
 
-export default SignUp;
+export default Signup;
