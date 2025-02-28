@@ -59,16 +59,16 @@ const Header: React.FC = () => {
                 {selectedWorkspace.role === 'instructor' && (
                   <>
                     <li style={{ marginRight: '20px' }}><Link to="/instructor/dashboard" style={linkStyle}>Instructor Dashboard</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/instructor/learning-urls" style={linkStyle}>Learning URLs</Link></li>
                     <li style={{ marginRight: '20px' }}><Link to="/instructor/user-management" style={linkStyle}>User Management</Link></li>
                     <li style={{ marginRight: '20px' }}><Link to="/instructor/learning-records" style={linkStyle}>Learning Records</Link></li>
-                    <li style={{ marginRight: '20px' }}><Link to="/instructor/learning-urls" style={linkStyle}>Learning URLs</Link></li>
                   </>
                 )}
                 {selectedWorkspace.role === 'user' && (
                   <>
                     <li style={{ marginRight: '20px' }}><Link to="/user/dashboard" style={linkStyle}>User Dashboard</Link></li>
-                    <li style={{ marginRight: '20px' }}><Link to="/user/learning-records" style={linkStyle}>Learning Records</Link></li>
                     <li style={{ marginRight: '20px' }}><Link to="/user/learning-urls" style={linkStyle}>Learning URLs</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/user/learning-records" style={linkStyle}>Learning Records</Link></li>
                   </>
                 )}
               </>
@@ -76,6 +76,7 @@ const Header: React.FC = () => {
             {isAdmin && !selectedWorkspace && (
               <>
                 <li style={{ marginRight: '20px' }}><Link to="/admin/dashboard" style={linkStyle}>Admin Dashboard</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/learning-urls" style={linkStyle}>Learning URLs</Link></li>
                 <li style={{ marginRight: '20px' }}><Link to="/admin/user-management" style={linkStyle}>User Management</Link></li>
                 <li style={{ marginRight: '20px' }}><Link to="/admin/workspace-management" style={linkStyle}>Workspace Management</Link></li>
                 <li style={{ marginRight: '20px' }}><Link to="/admin/learning-url-management" style={linkStyle}>Learning URL Management</Link></li>
