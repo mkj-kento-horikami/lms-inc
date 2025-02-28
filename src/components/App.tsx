@@ -4,7 +4,6 @@ import Signup from './Signup';
 import Login from './Login';
 import Logout from './Logout';
 import PasswordReset from './PasswordReset';
-import UserProfile from './user/UserProfile';
 import AdminDashboard from './admin/AdminDashboard';
 import UserManagement from './admin/UserManagement';
 import WorkspaceManagement from './admin/WorkspaceManagement';
@@ -38,7 +37,6 @@ const App: React.FC = () => {
                   <Route path="/login" element={<Login />} />
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/password-reset" element={<PasswordReset />} />
-                  <Route path="/profile" element={<UserProfile />} />
                   <Route path="/workspace-selector" element={<WorkspaceSelector />} />
                   <Route path="/workspace/:workspaceId" element={<UserDashboard />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
