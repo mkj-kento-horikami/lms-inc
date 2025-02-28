@@ -2,6 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { User } from '../../types/User';
+import {
+  Container,
+  Typography,
+  TextField,
+  Checkbox,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -9,6 +30,7 @@ const UserManagement: React.FC = () => {
   const [workspaceUsers, setWorkspaceUsers] = useState<{ [key: string]: User[] }>({});
   const [newUser, setNewUser] = useState({ name: '', email: '', isAdmin: false, workspaces: [], role: '' });
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -44,8 +66,9 @@ const UserManagement: React.FC = () => {
     setNewUser({ name: '', email: '', isAdmin: false, workspaces: [], role: '' });
   };
 
-  const handleEditUser = async (user: User) => {
+  const handleEditUser = (user: User) => {
     setEditingUser(user);
+    setOpen(true);
   };
 
   const handleUpdateUser = async () => {
@@ -55,6 +78,7 @@ const UserManagement: React.FC = () => {
       await updateDoc(userRef, updatedUser);
       setUsers(users.map(user => (user.id === editingUser.id ? editingUser : user)));
       setEditingUser(null);
+      setOpen(false);
     }
   };
 
@@ -63,123 +87,142 @@ const UserManagement: React.FC = () => {
     setUsers(users.filter(user => user.id !== userId));
   };
 
-  return (
-    <div>
-      <h2>User Management</h2>
+  const handleClose = () => {
+    setOpen(false);
+    setEditingUser(null);
+  };
 
-      <h3>Add New User</h3>
+  return (
+    <Container>
+      <Typography variant="h4" gutterBottom>User Management</Typography>
+
+      <Typography variant="h6" gutterBottom>Add New User</Typography>
       <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
-        <input
-          type="text"
-          placeholder="Name"
+        <TextField
+          label="Name"
           value={newUser.name}
           onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+          fullWidth
+          margin="normal"
         />
-        <input
-          type="email"
-          placeholder="Email"
+        <TextField
+          label="Email"
           value={newUser.email}
           onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+          fullWidth
+          margin="normal"
         />
         <label>
-          <input
-            type="checkbox"
+          <Checkbox
             checked={newUser.isAdmin}
             onChange={e => setNewUser({ ...newUser, isAdmin: e.target.checked })}
           />
           Is Admin
         </label>
-        <button type="submit">Add User</button>
+        <Button type="submit" variant="contained" color="primary">Add User</Button>
       </form>
 
-      {editingUser && (
-        <div>
-          <h3>Edit User</h3>
-          <form onSubmit={e => { e.preventDefault(); handleUpdateUser(); }}>
-            <input
-              type="text"
-              placeholder="Name"
-              value={editingUser.name}
-              onChange={e => setEditingUser({ ...editingUser, name: e.target.value })}
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={editingUser.email}
-              onChange={e => setEditingUser({ ...editingUser, email: e.target.value })}
-            />
-            <label>
-              <input
-                type="checkbox"
-                checked={editingUser.isAdmin}
-                onChange={e => setEditingUser({ ...editingUser, isAdmin: e.target.checked })}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Edit User</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Update the user information below.
+          </DialogContentText>
+          {editingUser && (
+            <form onSubmit={e => { e.preventDefault(); handleUpdateUser(); }}>
+              <TextField
+                label="Name"
+                value={editingUser.name}
+                onChange={e => setEditingUser({ ...editingUser, name: e.target.value })}
+                fullWidth
+                margin="normal"
               />
-              Is Admin
-            </label>
-            <button type="submit">Update User</button>
-          </form>
-        </div>
-      )}
+              <TextField
+                label="Email"
+                value={editingUser.email}
+                onChange={e => setEditingUser({ ...editingUser, email: e.target.value })}
+                fullWidth
+                margin="normal"
+              />
+              <label>
+                <Checkbox
+                  checked={editingUser.isAdmin}
+                  onChange={e => setEditingUser({ ...editingUser, isAdmin: e.target.checked })}
+                />
+                Is Admin
+              </label>
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">Cancel</Button>
+                <Button type="submit" color="primary">Update User</Button>
+              </DialogActions>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
-      <h3>Admin Users</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {adminUsers.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>Admin</td>
-              <td>
-                <button onClick={() => handleEditUser(user)}>Edit</button>
-                <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Typography variant="h6" gutterBottom>Admin Users</Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {adminUsers.map(user => (
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>Admin</TableCell>
+                <TableCell>
+                  <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
+                  <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      <h3>Workspace Users</h3>
+      <Typography variant="h6" gutterBottom>Workspace Users</Typography>
       {Object.keys(workspaceUsers).map(workspaceId => (
         <div key={workspaceId}>
-          <h4>Workspace: {workspaceId}</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {workspaceUsers[workspaceId].map(user => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>
-                    <button onClick={() => handleEditUser(user)}>Edit</button>
-                    <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Typography variant="subtitle1">Workspace: {workspaceId}</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {workspaceUsers[workspaceId].map(user => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.role}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
+                      <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       ))}
-    </div>
+    </Container>
   );
 };
 

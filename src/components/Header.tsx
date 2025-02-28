@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../contexts/WorkspaceContext';
 import { auth } from '../firebaseConfig';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 
 const Header: React.FC = () => {
   const { selectedWorkspace, isAdmin } = useWorkspace();
@@ -14,66 +15,88 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header>
-      <h1>Header</h1>
-      <nav>
-        <ul>
-          {!user && (
-            <>
-              <li><Link to="/login">Login</Link></li>
-              <li><Link to="/signup">Signup</Link></li>
-            </>
-          )}
+    <AppBar position="static" style={{ backgroundColor: '#0d47a1' }}>
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Typography variant="h6">
+          LMS
+        </Typography>
+        <Box style={{ display: 'flex', alignItems: 'center' }}>
           {user && (
             <>
-              <li>User: {user.displayName}</li>
-              <li>Email: {user.email}</li>
-              <li><button onClick={handleLogout}>Logout</button></li>
-            </>
-          )}
-          {selectedWorkspace && (
-            <>
-              <li>Workspace: {selectedWorkspace.name}</li>
-              <li>Role: {selectedWorkspace.role}</li>
-              {selectedWorkspace.role === 'admin' && (
+              <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>User: {user.displayName}</Typography>
+              <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Email: {user.email}</Typography>
+              {selectedWorkspace && (
                 <>
-                  <li><Link to="/admin/dashboard">Admin Dashboard</Link></li>
-                  <li><Link to="/admin/user-management">User Management</Link></li>
-                  <li><Link to="/admin/workspace-management">Workspace Management</Link></li>
-                  <li><Link to="/admin/learning-url-management">Learning URL Management</Link></li>
-                  <li><Link to="/admin/learning-records">Learning Records</Link></li>
+                  <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Workspace: {selectedWorkspace.name}</Typography>
+                  <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Role: {selectedWorkspace.role}</Typography>
                 </>
               )}
-              {selectedWorkspace.role === 'instructor' && (
-                <>
-                  <li><Link to="/instructor/dashboard">Instructor Dashboard</Link></li>
-                  <li><Link to="/instructor/user-management">User Management</Link></li>
-                  <li><Link to="/instructor/learning-records">Learning Records</Link></li>
-                  <li><Link to="/instructor/learning-urls">Learning URLs</Link></li>
-                </>
-              )}
-              {selectedWorkspace.role === 'user' && (
-                <>
-                  <li><Link to="/user/dashboard">User Dashboard</Link></li>
-                  <li><Link to="/user/learning-records">Learning Records</Link></li>
-                  <li><Link to="/user/learning-urls">Learning URLs</Link></li>
-                </>
-              )}
+              <Button onClick={handleLogout} style={{ color: '#fff' }}>Logout</Button>
             </>
           )}
-          {isAdmin && !selectedWorkspace && (
-            <>
-              <li><Link to="/admin/dashboard">Admin Dashboard</Link></li>
-              <li><Link to="/admin/user-management">User Management</Link></li>
-              <li><Link to="/admin/workspace-management">Workspace Management</Link></li>
-              <li><Link to="/admin/learning-url-management">Learning URL Management</Link></li>
-              <li><Link to="/admin/learning-records">Learning Records</Link></li>
-            </>
-          )}
-        </ul>
-      </nav>
-    </header>
+        </Box>
+      </Toolbar>
+      <Toolbar>
+        <nav>
+          <ul style={{ display: 'flex', listStyle: 'none', padding: 0, margin: 0 }}>
+            {!user && (
+              <>
+                <li style={{ marginRight: '20px' }}><Link to="/login" style={linkStyle}>Login</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/signup" style={linkStyle}>Signup</Link></li>
+              </>
+            )}
+            {selectedWorkspace && (
+              <>
+                {selectedWorkspace.role === 'admin' && (
+                  <>
+                    <li style={{ marginRight: '20px' }}><Link to="/admin/dashboard" style={linkStyle}>Admin Dashboard</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/admin/user-management" style={linkStyle}>User Management</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/admin/workspace-management" style={linkStyle}>Workspace Management</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/admin/learning-url-management" style={linkStyle}>Learning URL Management</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/admin/learning-records" style={linkStyle}>Learning Records</Link></li>
+                  </>
+                )}
+                {selectedWorkspace.role === 'instructor' && (
+                  <>
+                    <li style={{ marginRight: '20px' }}><Link to="/instructor/dashboard" style={linkStyle}>Instructor Dashboard</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/instructor/user-management" style={linkStyle}>User Management</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/instructor/learning-records" style={linkStyle}>Learning Records</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/instructor/learning-urls" style={linkStyle}>Learning URLs</Link></li>
+                  </>
+                )}
+                {selectedWorkspace.role === 'user' && (
+                  <>
+                    <li style={{ marginRight: '20px' }}><Link to="/user/dashboard" style={linkStyle}>User Dashboard</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/user/learning-records" style={linkStyle}>Learning Records</Link></li>
+                    <li style={{ marginRight: '20px' }}><Link to="/user/learning-urls" style={linkStyle}>Learning URLs</Link></li>
+                  </>
+                )}
+              </>
+            )}
+            {isAdmin && !selectedWorkspace && (
+              <>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/dashboard" style={linkStyle}>Admin Dashboard</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/user-management" style={linkStyle}>User Management</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/workspace-management" style={linkStyle}>Workspace Management</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/learning-url-management" style={linkStyle}>Learning URL Management</Link></li>
+                <li style={{ marginRight: '20px' }}><Link to="/admin/learning-records" style={linkStyle}>Learning Records</Link></li>
+              </>
+            )}
+          </ul>
+        </nav>
+      </Toolbar>
+    </AppBar>
   );
+};
+
+const linkStyle = {
+  color: '#fff',
+  textDecoration: 'none',
+  transition: 'color 0.3s',
+};
+
+const linkHoverStyle = {
+  color: '#ffeb3b',
 };
 
 export default Header;
