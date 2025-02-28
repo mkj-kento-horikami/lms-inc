@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useWorkspace } from '../contexts/WorkspaceContext';
 import { auth } from '../firebaseConfig';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 
 const Header: React.FC = () => {
   const { selectedWorkspace, isAdmin } = useWorkspace();
@@ -93,10 +93,6 @@ const linkStyle = {
   color: '#fff',
   textDecoration: 'none',
   transition: 'color 0.3s',
-};
-
-const linkHoverStyle = {
-  color: '#ffeb3b',
 };
 
 export default Header;

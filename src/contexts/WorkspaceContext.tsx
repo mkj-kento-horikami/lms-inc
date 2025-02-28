@@ -34,24 +34,24 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          setIsAdmin(userData.isAdmin);
+
           const userWorkspaces = await Promise.all(
             userData.workspaces.map(async (ws: any) => {
               const workspaceDoc = await getDoc(doc(db, 'workspaces', ws.workspaceId));
               if (workspaceDoc.exists()) {
-                const workspaceData = workspaceDoc.data();
                 return {
                   workspaceId: ws.workspaceId,
-                  name: workspaceData.name,
+                  name: workspaceDoc.data().name,
                   role: ws.role,
                 };
               }
               return null;
             })
           );
-          const validWorkspaces = userWorkspaces.filter((ws: Workspace | null): ws is Workspace => ws !== null);
-          console.log('Fetched workspaces:', validWorkspaces); // デバッグ用ログ
-          setWorkspaces(validWorkspaces);
-          setIsAdmin(userData.isAdmin || false);
+
+          setWorkspaces(userWorkspaces.filter((ws: Workspace | null): ws is Workspace => ws !== null));
+          setSelectedWorkspace(userWorkspaces.find((ws: Workspace | null) => ws?.role === 'instructor') || null);
         }
       } else {
         setSelectedWorkspace(null);
@@ -70,4 +70,6 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
   );
 };
 
-export const useWorkspace = () => useContext(WorkspaceContext);
+export const useWorkspace = () => {
+  return useContext(WorkspaceContext);
+};
