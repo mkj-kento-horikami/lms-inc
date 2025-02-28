@@ -136,7 +136,9 @@ Path: `/learningUrls/{workspaceId}_{urlId}`
 ```json
 {
   "id": "url456",
-  "workspaceId": "workspaceA",
+  "category": "AI",
+  "title": "AI Bootcamp",
+  "description": "Learn the basics of AI",
   "url": "https://example.com/learning-course",
   "createdBy": "admin123"
 }
