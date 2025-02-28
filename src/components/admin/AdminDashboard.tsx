@@ -10,7 +10,7 @@ import { db } from '../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { LearningLog } from '../../types/LearningLog';
 import { LearningResource } from '../../types/LearningResource';
-import { User } from '../../types/User';
+import { User } from '../../types/User'; // インポート
 
 const AdminDashboard: React.FC = () => {
   const [logs, setLogs] = useState<LearningLog[]>([]);
@@ -48,9 +48,7 @@ const AdminDashboard: React.FC = () => {
       const querySnapshot = await getDocs(collection(db, 'users'));
       const usersData = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        name: doc.data().name, // name プロパティを追加
-        email: doc.data().email,
-        role: doc.data().role
+        ...doc.data()
       })) as User[];
       setUsers(usersData);
     };
@@ -71,6 +69,38 @@ const AdminDashboard: React.FC = () => {
       <LearningLogList logs={logs} />
       <LearningResourceList resources={resources} />
       <UserList users={users} />
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Is Admin</th>
+            <th>Role</th>
+            <th>Workspaces</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>{user.isAdmin ? 'Yes' : 'No'}</td>
+              <td>{user.role}</td>
+              <td>
+                <ul>
+                  {user.workspaces.map(ws => (
+                    <li key={ws.workspaceId}>
+                      {ws.workspaceId} ({ws.role})
+                    </li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

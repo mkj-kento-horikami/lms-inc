@@ -39,11 +39,15 @@ const Header: React.FC = () => {
                 <>
                   <li><Link to="/admin/dashboard">Admin Dashboard</Link></li>
                   <li><Link to="/admin/user-management">User Management</Link></li>
+                  <li><Link to="/admin/workspace-management">Workspace Management</Link></li>
+                  <li><Link to="/admin/learning-url-management">Learning URL Management</Link></li>
+                  <li><Link to="/admin/learning-records">Learning Records</Link></li>
                 </>
               )}
               {selectedWorkspace.role === 'instructor' && (
                 <>
                   <li><Link to="/instructor/dashboard">Instructor Dashboard</Link></li>
+                  <li><Link to="/instructor/user-management">User Management</Link></li>
                   <li><Link to="/instructor/learning-records">Learning Records</Link></li>
                   <li><Link to="/instructor/learning-urls">Learning URLs</Link></li>
                 </>
@@ -51,7 +55,8 @@ const Header: React.FC = () => {
               {selectedWorkspace.role === 'user' && (
                 <>
                   <li><Link to="/user/dashboard">User Dashboard</Link></li>
-                  <li><Link to="/user/profile">User Profile</Link></li>
+                  <li><Link to="/user/learning-records">Learning Records</Link></li>
+                  <li><Link to="/user/learning-urls">Learning URLs</Link></li>
                 </>
               )}
             </>
@@ -60,6 +65,9 @@ const Header: React.FC = () => {
             <>
               <li><Link to="/admin/dashboard">Admin Dashboard</Link></li>
               <li><Link to="/admin/user-management">User Management</Link></li>
+              <li><Link to="/admin/workspace-management">Workspace Management</Link></li>
+              <li><Link to="/admin/learning-url-management">Learning URL Management</Link></li>
+              <li><Link to="/admin/learning-records">Learning Records</Link></li>
             </>
           )}
         </ul>
