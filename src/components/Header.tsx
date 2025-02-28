@@ -1,22 +1,11 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import { Link } from 'react-router-dom';
+import useLogout from '../hooks/useLogout';
 import { useWorkspace } from '../contexts/WorkspaceContext';
 
 const Header: React.FC = () => {
-  const { selectedWorkspace, setSelectedWorkspace } = useWorkspace();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    const confirmLogout = window.confirm('Are you sure you want to logout?');
-    if (confirmLogout) {
-      await signOut(auth);
-      setSelectedWorkspace(null); // ログアウト時にワークスペースをリセット
-      alert('You have been logged out.');
-      navigate('/login');
-    }
-  };
+  const { selectedWorkspace } = useWorkspace();
+  const logout = useLogout();
 
   return (
     <header>
@@ -29,7 +18,7 @@ const Header: React.FC = () => {
             <>
               <li>Workspace: {selectedWorkspace.workspaceId}</li>
               <li>Role: {selectedWorkspace.role}</li>
-              <li><button onClick={handleLogout}>Logout</button></li>
+              <li><button onClick={logout}>Logout</button></li>
             </>
           )}
         </ul>
