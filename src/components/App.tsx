@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -12,46 +12,83 @@ import UserDashboard from './user/UserDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import InstructorDashboard from './instructor/InstructorDashboard';
 import Header from './Header';
+import WorkspaceSelector from './WorkspaceSelector';
+import { WorkspaceProvider, useWorkspace } from '../contexts/WorkspaceContext';
 import '../styles/App.css'; // パスが正しいか確認
 
+interface Workspace {
+  workspaceId: string;
+  role: string;
+}
+
 const App: React.FC = () => {
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        setUser(currentUser);
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         if (userDoc.exists()) {
-          setUserRole(userDoc.data()?.role);
+          setWorkspaces(userDoc.data()?.workspaces || []);
+          setIsAdmin(userDoc.data()?.isAdmin || false);
         }
       } else {
-        setUserRole(null);
+        setUser(null);
+        setWorkspaces([]);
+        setIsAdmin(false);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Router>
-      <div>
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/invite/:inviteId" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/password-reset" element={<PasswordReset />} />
-            <Route path="/profile" element={<UserProfile />} />
-            {userRole === 'admin' && <Route path="/dashboard" element={<AdminDashboard />} />}
-            {userRole === 'user' && <Route path="/dashboard" element={<UserDashboard />} />}
-            {userRole === 'instructor' && <Route path="/dashboard" element={<InstructorDashboard />} />}
-            {/* 他のルート */}
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <WorkspaceProvider>
+      <Router>
+        <div>
+          <Header />
+          <main>
+            <Routes>
+              <Route path="/invite/:inviteId" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/password-reset" element={<PasswordReset />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/workspace-selector" element={<WorkspaceSelector workspaces={workspaces} isAdmin={isAdmin} />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/" element={<Navigate to="/login" />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </WorkspaceProvider>
   );
+};
+
+const Dashboard: React.FC = () => {
+  const { selectedWorkspace } = useWorkspace();
+
+  if (!selectedWorkspace) {
+    return <Navigate to="/workspace-selector" />;
+  }
+
+  if (selectedWorkspace.role === 'admin') {
+    return <AdminDashboard />;
+  } else if (selectedWorkspace.role === 'instructor') {
+    return <InstructorDashboard />;
+  } else {
+    return <UserDashboard />;
+  }
 };
 
 export default App;

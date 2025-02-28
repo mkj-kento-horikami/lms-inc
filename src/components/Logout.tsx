@@ -1,20 +1,30 @@
-import React from 'react';
-import { auth } from '../firebaseConfig';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
+import { useWorkspace } from '../contexts/WorkspaceContext';
 
 const Logout: React.FC = () => {
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      // ログアウト成功時の処理
-    } catch (error: any) {
-      console.error('Error logging out:', error);
-    }
-  };
+  const navigate = useNavigate();
+  const { setSelectedWorkspace } = useWorkspace();
 
-  return (
-    <button onClick={handleLogout}>Logout</button>
-  );
+  useEffect(() => {
+    const logout = async () => {
+      const confirmLogout = window.confirm('Are you sure you want to logout?');
+      if (confirmLogout) {
+        await signOut(auth);
+        setSelectedWorkspace(null); // ログアウト時にワークスペースをリセット
+        alert('You have been logged out.');
+        navigate('/login');
+      } else {
+        navigate('/dashboard');
+      }
+    };
+
+    logout();
+  }, [navigate, setSelectedWorkspace]);
+
+  return <div>Logging out...</div>;
 };
 
 export default Logout;

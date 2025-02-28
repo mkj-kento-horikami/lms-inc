@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { auth } from '../firebaseConfig';
+import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +13,8 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      alert('You have been logged in.');
+      navigate('/workspace-selector');
     } catch (error: any) {
       setError('ログインに失敗しました。');
     }
@@ -44,7 +45,6 @@ const Login: React.FC = () => {
         <button type="submit">Login</button>
       </form>
       {error && <p>{error}</p>}
-      <p><Link to="/password-reset">パスワードを忘れた方はこちら</Link></p>
     </div>
   );
 };
