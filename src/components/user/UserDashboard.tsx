@@ -7,6 +7,9 @@ import { collection, getDocs } from 'firebase/firestore';
 import { LearningLog } from '../../types/LearningLog';
 import { LearningResource } from '../../types/LearningResource';
 import { User } from '../../types/User';
+import { Route, Routes } from 'react-router-dom';
+import LearningURLs from './LearningURLs';
+import LearningRecords from './LearningRecords';
 
 const UserDashboard: React.FC = () => {
   const [logs, setLogs] = useState<LearningLog[]>([]);
@@ -59,9 +62,10 @@ const UserDashboard: React.FC = () => {
   return (
     <div>
       <h2>User Dashboard</h2>
-      <LearningLogList logs={logs} />
-      <LearningResourceList resources={resources} />
-      <UserList users={users} />
+      <Routes>
+        <Route path="/user/learning-urls" element={<LearningURLs />} />
+        <Route path="/user/learning-records" element={<LearningRecords />} />
+      </Routes>
     </div>
   );
 };

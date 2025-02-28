@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import LearningLogList from '../common/LearningLogList';
-import LearningResourceList from '../common/LearningResourceList';
-import UserList from '../common/UserList';
+import { Route, Routes } from 'react-router-dom';
+import UserManagement from './UserManagement';
+import LearningRecords from './LearningRecords';
+import LearningURLs from './LearningURLs';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { LearningLog } from '../../types/LearningLog';
@@ -44,7 +45,7 @@ const InstructorDashboard: React.FC = () => {
       const querySnapshot = await getDocs(collection(db, 'users'));
       const usersData = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        name: doc.data().name, // name プロパティを追加
+        name: doc.data().name,
         email: doc.data().email,
         role: doc.data().role
       })) as User[];
@@ -59,9 +60,11 @@ const InstructorDashboard: React.FC = () => {
   return (
     <div>
       <h2>Instructor Dashboard</h2>
-      <LearningLogList logs={logs} />
-      <LearningResourceList resources={resources} />
-      <UserList users={users} />
+      <Routes>
+        <Route path="/instructor/user-management" element={<UserManagement />} />
+        <Route path="/instructor/learning-records" element={<LearningRecords />} />
+        <Route path="/instructor/learning-urls" element={<LearningURLs />} />
+      </Routes>
     </div>
   );
 };

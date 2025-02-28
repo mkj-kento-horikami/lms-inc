@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import WorkspaceManagement from './WorkspaceManagement';
+import LearningURLManagement from './LearningURLManagement';
+import LearningRecords from './LearningRecords';
 import LearningLogList from '../common/LearningLogList';
 import LearningResourceList from '../common/LearningResourceList';
 import UserList from '../common/UserList';
@@ -59,6 +63,11 @@ const AdminDashboard: React.FC = () => {
   return (
     <div>
       <h2>Admin Dashboard</h2>
+      <Routes>
+        <Route path="/admin/workspace-management" element={<WorkspaceManagement />} />
+        <Route path="/admin/learning-url-management" element={<LearningURLManagement />} />
+        <Route path="/admin/learning-records" element={<LearningRecords />} />
+      </Routes>
       <LearningLogList logs={logs} />
       <LearningResourceList resources={resources} />
       <UserList users={users} />
