@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, MenuItem, Select, FormControl, SelectChangeEvent, Tooltip } from '@mui/material';
 import { useWorkspace } from '../contexts/WorkspaceContext';
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
 
 const Header: React.FC = () => {
   const { selectedWorkspace, setSelectedWorkspace, workspaces, isAdmin } = useWorkspace();
   const user = auth.currentUser;
   const navigate = useNavigate();
+  const [inviteLink, setInviteLink] = useState<string>('');
+
+  useEffect(() => {
+    const fetchInviteLink = async () => {
+      if (selectedWorkspace) {
+        const workspaceDoc = await getDoc(doc(db, 'workspaces', selectedWorkspace.workspaceId));
+        if (workspaceDoc.exists()) {
+          const workspaceData = workspaceDoc.data();
+          setInviteLink(workspaceData.inviteURL);
+        }
+      }
+    };
+
+    fetchInviteLink();
+  }, [selectedWorkspace]);
 
   const handleLogout = async () => {
     await auth.signOut();
@@ -23,6 +39,11 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleCopyInviteLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    alert('Invite link copied to clipboard');
+  };
+
   return (
     <AppBar position="static" style={{ backgroundColor: '#0d47a1' }}>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
@@ -32,19 +53,15 @@ const Header: React.FC = () => {
         <Box style={{ display: 'flex', alignItems: 'center' }}>
           {user && (
             <>
-              <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>User: {user.displayName}</Typography>
-              <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Email: {user.email}</Typography>
-              {selectedWorkspace && (
-                <>
-                  <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Workspace: {selectedWorkspace.name}</Typography>
-                  <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Role: {selectedWorkspace.role}</Typography>
-                </>
-              )}
               <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '20px' }}>
                 <Select
                   value={selectedWorkspace ? `${selectedWorkspace.workspaceId}-${selectedWorkspace.role}` : ''}
                   onChange={handleWorkspaceChange}
                   displayEmpty
+                  style={{ color: '#fff', borderColor: '#fff' }}
+                  inputProps={{
+                    style: { color: '#fff', borderColor: '#fff' },
+                  }}
                 >
                   {workspaces.map(ws => (
                     <MenuItem key={`${ws.workspaceId}-${ws.role}`} value={`${ws.workspaceId}-${ws.role}`}>
@@ -53,7 +70,17 @@ const Header: React.FC = () => {
                   ))}
                 </Select>
               </FormControl>
-              <Button onClick={handleLogout} style={{ color: '#fff' }}>Logout</Button>
+              {inviteLink && (
+                <Box style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                  <Typography variant="body1" style={{ color: '#fff', marginRight: '10px' }}>Invite Link:</Typography>
+                  <Tooltip title="Copy Invite Link">
+                    <Typography variant="body1" style={{ color: '#fff', cursor: 'pointer' }} onClick={handleCopyInviteLink}>
+                      {inviteLink}
+                    </Typography>
+                  </Tooltip>
+                </Box>
+              )}
+              <Button onClick={handleLogout} variant="contained" style={{ backgroundColor: '#808080', color: '#fff', marginLeft: '20px' }}>Logout</Button>
             </>
           )}
         </Box>
