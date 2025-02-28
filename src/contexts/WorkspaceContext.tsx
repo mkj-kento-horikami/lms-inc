@@ -50,8 +50,18 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
             })
           );
 
-          setWorkspaces(userWorkspaces.filter((ws: Workspace | null): ws is Workspace => ws !== null));
-          setSelectedWorkspace(userWorkspaces.find((ws: Workspace | null) => ws?.role === 'instructor') || null);
+          const filteredWorkspaces = userWorkspaces.filter((ws: Workspace | null): ws is Workspace => ws !== null);
+
+          if (userData.isAdmin) {
+            filteredWorkspaces.push({
+              workspaceId: 'admin',
+              name: 'Login as Admin',
+              role: 'admin',
+            });
+          }
+
+          setWorkspaces(filteredWorkspaces);
+          setSelectedWorkspace(filteredWorkspaces.find((ws: Workspace) => ws.role === 'instructor') || null);
         }
       } else {
         setSelectedWorkspace(null);

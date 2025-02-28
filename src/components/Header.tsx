@@ -1,17 +1,26 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
 import { useWorkspace } from '../contexts/WorkspaceContext';
 import { auth } from '../firebaseConfig';
 
 const Header: React.FC = () => {
-  const { selectedWorkspace, isAdmin } = useWorkspace();
+  const { selectedWorkspace, setSelectedWorkspace, workspaces, isAdmin } = useWorkspace();
   const user = auth.currentUser;
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await auth.signOut();
     navigate('/login');
+  };
+
+  const handleWorkspaceChange = (event: SelectChangeEvent<string>) => {
+    const [workspaceId, role] = event.target.value.split('-');
+    const workspace = workspaces.find(ws => ws.workspaceId === workspaceId && ws.role === role) || null;
+    setSelectedWorkspace(workspace);
+    if (workspace?.role === 'admin') {
+      navigate('/admin/dashboard');
+    }
   };
 
   return (
@@ -31,6 +40,19 @@ const Header: React.FC = () => {
                   <Typography variant="body1" style={{ color: '#fff', marginRight: '20px' }}>Role: {selectedWorkspace.role}</Typography>
                 </>
               )}
+              <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '20px' }}>
+                <Select
+                  value={selectedWorkspace ? `${selectedWorkspace.workspaceId}-${selectedWorkspace.role}` : ''}
+                  onChange={handleWorkspaceChange}
+                  displayEmpty
+                >
+                  {workspaces.map(ws => (
+                    <MenuItem key={`${ws.workspaceId}-${ws.role}`} value={`${ws.workspaceId}-${ws.role}`}>
+                      {`${ws.name} - ${ws.role}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <Button onClick={handleLogout} style={{ color: '#fff' }}>Logout</Button>
             </>
           )}
