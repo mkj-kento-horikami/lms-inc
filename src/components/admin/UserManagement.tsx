@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, auth } from '../../firebaseConfig';
 import { User } from '../../types/User';
@@ -90,11 +90,25 @@ const AdminUserManagement: React.FC = () => {
   }, []);
 
   const handleAddUser = async () => {
-    const userCredential = await createUserWithEmailAndPassword(auth, newUser.email, newUser.password);
-    const userId = userCredential.user.uid;
-    const docRef = await addDoc(collection(db, 'users'), { ...newUser, id: userId });
-    setUsers([...users, { id: docRef.id, ...newUser } as User]);
-    setNewUser({ name: '', email: '', password: '', isAdmin: false, workspaces: [], role: '' });
+    try {
+      // Firebase Authenticationにユーザーを作成
+      const userCredential = await createUserWithEmailAndPassword(auth, newUser.email, newUser.password);
+      const userId = userCredential.user.uid;
+
+      // Firestoreのusersコレクションにユーザーを追加
+      const userDoc = {
+        ...newUser,
+        id: userId,
+        role: newUser.isAdmin ? 'Admin' : newUser.role
+      };
+      await setDoc(doc(db, 'users', userId), userDoc);
+
+      // ローカルのユーザーリストを更新
+      setUsers([...users, userDoc as User]);
+      setNewUser({ name: '', email: '', password: '', isAdmin: false, workspaces: [], role: '' });
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   const handleEditUser = (user: User) => {
@@ -104,12 +118,19 @@ const AdminUserManagement: React.FC = () => {
 
   const handleUpdateUser = async () => {
     if (editingUser) {
+      console.log('Updating user:', editingUser); // デバッグ用ログ
       const userRef = doc(db, 'users', editingUser.id);
-      const { id, ...updatedUser } = editingUser; // id を除いたオブジェクトを作成
-      await updateDoc(userRef, updatedUser);
-      setUsers(users.map(user => (user.id === editingUser.id ? editingUser : user)));
-      setEditingUser(null);
-      setOpen(false);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const { id, ...updatedUser } = editingUser; // id を除いたオブジェクトを作成
+        await updateDoc(userRef, updatedUser);
+        setUsers(users.map(user => (user.id === editingUser.id ? editingUser : user)));
+        setEditingUser(null);
+        setOpen(false);
+      } else {
+        console.error('No document to update:', editingUser.id);
+      }
     }
   };
 
