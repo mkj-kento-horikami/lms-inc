@@ -1,4 +1,5 @@
 export interface LearningRecord {
+  id: string;
   userId: string;
   userName: string;
   workspaceId: string;
@@ -6,6 +7,8 @@ export interface LearningRecord {
   urlId: string;
   urlTitle: string;
   url: string;
-  status: 'completed' | 'in progress';
+  category: string; // category プロパティを追加
+  status: 'completed' | 'not completed';
   timestamp: string;
+  clickCount: number;
 }
