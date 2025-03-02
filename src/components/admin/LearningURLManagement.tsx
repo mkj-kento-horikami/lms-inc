@@ -25,6 +25,7 @@ import {
   CardActions,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import Papa from 'papaparse';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles.css';
 
@@ -97,6 +98,32 @@ const LearningURLManagement: React.FC = () => {
     return (order === 'asc' ? 1 : -1) * aValue.localeCompare(bValue);
   });
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        complete: async (results) => {
+          const data = results.data as Array<{ category: string; title: string; description: string; url: string }>;
+          console.log('Parsed CSV Data:', data); // デバッグ用ログ
+          for (const row of data) {
+            await addDoc(collection(db, 'learningUrls'), {
+              ...row,
+              createdBy: currentUser?.uid
+            });
+          }
+          const querySnapshot = await getDocs(collection(db, 'learningUrls'));
+          const learningUrlsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          console.log('Updated Learning URLs:', learningUrlsData); // デバッグ用ログ
+          setLearningUrls(learningUrlsData);
+        },
+      });
+    }
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>Learning URL Management</Typography>
@@ -137,6 +164,18 @@ const LearningURLManagement: React.FC = () => {
         </CardContent>
         <CardActions>
           <Button type="submit" variant="contained" color="primary" onClick={handleAddLearningUrl}>Add Learning URL</Button>
+          <input
+            accept=".csv"
+            style={{ display: 'none' }}
+            id="file-upload"
+            type="file"
+            onChange={handleFileUpload}
+          />
+          <label htmlFor="file-upload">
+            <Button variant="contained" color="primary" component="span">
+              Upload CSV
+            </Button>
+          </label>
         </CardActions>
       </Card>
 

@@ -19,10 +19,12 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["jest", "@testing-library/jest-dom"]
+    "types": ["jest", "@testing-library/jest-dom"],
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": [
-    "src"
+    "src",
+    "./types/papaparse.d.ts"
   ],
   "exclude": [
     "node_modules"
