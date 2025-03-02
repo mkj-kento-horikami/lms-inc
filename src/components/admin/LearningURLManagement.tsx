@@ -20,6 +20,9 @@ import {
   DialogContentText,
   DialogTitle,
   TableSortLabel,
+  Card,
+  CardContent,
+  CardActions,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -98,38 +101,44 @@ const LearningURLManagement: React.FC = () => {
     <Container>
       <Typography variant="h4" gutterBottom>Learning URL Management</Typography>
 
-      <Typography variant="h6" gutterBottom>Add New Learning URL</Typography>
-      <form onSubmit={e => { e.preventDefault(); handleAddLearningUrl(); }}>
-        <TextField
-          label="Category"
-          value={newLearningUrl.category}
-          onChange={e => setNewLearningUrl({ ...newLearningUrl, category: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Title"
-          value={newLearningUrl.title}
-          onChange={e => setNewLearningUrl({ ...newLearningUrl, title: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Description"
-          value={newLearningUrl.description}
-          onChange={e => setNewLearningUrl({ ...newLearningUrl, description: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="URL"
-          value={newLearningUrl.url}
-          onChange={e => setNewLearningUrl({ ...newLearningUrl, url: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">Add Learning URL</Button>
-      </form>
+      <Card style={{ marginBottom: '20px' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Add New Learning URL</Typography>
+          <form onSubmit={e => { e.preventDefault(); handleAddLearningUrl(); }}>
+            <TextField
+              label="Category"
+              value={newLearningUrl.category}
+              onChange={e => setNewLearningUrl({ ...newLearningUrl, category: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Title"
+              value={newLearningUrl.title}
+              onChange={e => setNewLearningUrl({ ...newLearningUrl, title: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Description"
+              value={newLearningUrl.description}
+              onChange={e => setNewLearningUrl({ ...newLearningUrl, description: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="URL"
+              value={newLearningUrl.url}
+              onChange={e => setNewLearningUrl({ ...newLearningUrl, url: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+          </form>
+        </CardContent>
+        <CardActions>
+          <Button type="submit" variant="contained" color="primary" onClick={handleAddLearningUrl}>Add Learning URL</Button>
+        </CardActions>
+      </Card>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit Learning URL</DialogTitle>

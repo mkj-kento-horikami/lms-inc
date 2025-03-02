@@ -21,6 +21,9 @@ import {
   DialogContentText,
   DialogTitle,
   TableSortLabel,
+  Card,
+  CardContent,
+  CardActions,
 } from '@mui/material';
 import { Edit, Delete, FileCopy, Refresh } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
@@ -126,17 +129,23 @@ const WorkspaceManagement: React.FC = () => {
     <Container>
       <Typography variant="h4" gutterBottom>Workspace Management</Typography>
 
-      <Typography variant="h6" gutterBottom>Add New Workspace</Typography>
-      <form onSubmit={e => { e.preventDefault(); handleAddWorkspace(); }}>
-        <TextField
-          label="Workspace Name"
-          value={newWorkspace.name}
-          onChange={e => setNewWorkspace({ ...newWorkspace, name: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">Add Workspace</Button>
-      </form>
+      <Card style={{ marginBottom: '20px' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Add New Workspace</Typography>
+          <form onSubmit={e => { e.preventDefault(); handleAddWorkspace(); }}>
+            <TextField
+              label="Workspace Name"
+              value={newWorkspace.name}
+              onChange={e => setNewWorkspace({ ...newWorkspace, name: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+          </form>
+        </CardContent>
+        <CardActions>
+          <Button type="submit" variant="contained" color="primary" onClick={handleAddWorkspace}>Add Workspace</Button>
+        </CardActions>
+      </Card>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit Workspace</DialogTitle>

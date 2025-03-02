@@ -3,6 +3,6 @@ export interface User {
   name: string;
   email: string;
   isAdmin: boolean;
-  role: string; // 追加
+  role: string;
   workspaces: { workspaceId: string; role: string }[];
 }

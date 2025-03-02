@@ -9,14 +9,6 @@ import {
   TextField,
   Checkbox,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -26,14 +18,23 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Box,
+  FormControlLabel,
   Grid,
-  TableSortLabel,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Card,
+  CardContent,
+  CardActions,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import UserManagementTable from '../common/UserManagementTable';
 import '../../styles.css';
 
-const UserManagement: React.FC = () => {
+const AdminUserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [adminUsers, setAdminUsers] = useState<User[]>([]);
   const [workspaceUsers, setWorkspaceUsers] = useState<{ [key: string]: User[] }>({});
@@ -168,39 +169,47 @@ const UserManagement: React.FC = () => {
     <Container>
       <Typography variant="h4" gutterBottom>User Management</Typography>
 
-      <Typography variant="h6" gutterBottom>Add New User</Typography>
-      <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
-        <TextField
-          label="Name"
-          value={newUser.name}
-          onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Email"
-          value={newUser.email}
-          onChange={e => setNewUser({ ...newUser, email: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={newUser.password}
-          onChange={e => setNewUser({ ...newUser, password: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <label>
-          <Checkbox
-            checked={newUser.isAdmin}
-            onChange={e => setNewUser({ ...newUser, isAdmin: e.target.checked })}
-          />
-          Is Admin
-        </label>
-        <Button type="submit" variant="contained" color="primary">Add User</Button>
-      </form>
+      <Card style={{ marginBottom: '20px' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Add New User</Typography>
+          <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
+            <TextField
+              label="Name"
+              value={newUser.name}
+              onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email"
+              value={newUser.email}
+              onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Password"
+              type="password"
+              value={newUser.password}
+              onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={newUser.isAdmin}
+                  onChange={e => setNewUser({ ...newUser, isAdmin: e.target.checked })}
+                />
+              }
+              label="Is Admin"
+            />
+          </form>
+        </CardContent>
+        <CardActions>
+          <Button type="submit" variant="contained" color="primary" onClick={handleAddUser}>Add User</Button>
+        </CardActions>
+      </Card>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit User</DialogTitle>
@@ -224,13 +233,15 @@ const UserManagement: React.FC = () => {
                 fullWidth
                 margin="normal"
               />
-              <label>
-                <Checkbox
-                  checked={editingUser.isAdmin}
-                  onChange={e => setEditingUser({ ...editingUser, isAdmin: e.target.checked })}
-                />
-                Is Admin
-              </label>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={editingUser.isAdmin}
+                    onChange={e => setEditingUser({ ...editingUser, isAdmin: e.target.checked })}
+                  />
+                }
+                label="Is Admin"
+              />
               <TableContainer component={Paper}>
                 <Table>
                   <TableHead>
@@ -304,177 +315,40 @@ const UserManagement: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <Typography variant="h6" gutterBottom>Admin Users</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'id'}
-                  direction={orderBy === 'id' ? order : 'asc'}
-                  onClick={() => handleRequestSort('id')}
-                >
-                  ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'name'}
-                  direction={orderBy === 'name' ? order : 'asc'}
-                  onClick={() => handleRequestSort('name')}
-                >
-                  Name
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'email'}
-                  direction={orderBy === 'email' ? order : 'asc'}
-                  onClick={() => handleRequestSort('email')}
-                >
-                  Email
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">Role</TableCell>
-              <TableCell className="table-head-cell">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {adminUsers.map(user => (
-              <TableRow key={user.id} className="table-row">
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>Admin</TableCell>
-                <TableCell>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
-                    <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <UserManagementTable
+        users={adminUsers}
+        order={order}
+        orderBy={orderBy}
+        handleRequestSort={handleRequestSort}
+        handleEditUser={handleEditUser}
+        handleDeleteUser={handleDeleteUser}
+        title="Admin Users"
+      />
 
-      <Typography variant="h6" gutterBottom>Unassigned Users</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'id'}
-                  direction={orderBy === 'id' ? order : 'asc'}
-                  onClick={() => handleRequestSort('id')}
-                >
-                  ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'name'}
-                  direction={orderBy === 'name' ? order : 'asc'}
-                  onClick={() => handleRequestSort('name')}
-                >
-                  Name
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'email'}
-                  direction={orderBy === 'email' ? order : 'asc'}
-                  onClick={() => handleRequestSort('email')}
-                >
-                  Email
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">Role</TableCell>
-              <TableCell className="table-head-cell">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {unassignedUsers.map(user => (
-              <TableRow key={user.id} className="table-row">
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
-                    <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <UserManagementTable
+        users={unassignedUsers}
+        order={order}
+        orderBy={orderBy}
+        handleRequestSort={handleRequestSort}
+        handleEditUser={handleEditUser}
+        handleDeleteUser={handleDeleteUser}
+        title="Unassigned Users"
+      />
 
-      <Typography variant="h6" gutterBottom>Workspace Users</Typography>
       {Object.keys(workspaceUsers).map(workspaceId => (
-        <div key={workspaceId}>
-          <Typography variant="subtitle1">Workspace: {workspaceId}</Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="table-head-cell">
-                    <TableSortLabel
-                      active={orderBy === 'id'}
-                      direction={orderBy === 'id' ? order : 'asc'}
-                      onClick={() => handleRequestSort('id')}
-                    >
-                      ID
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell className="table-head-cell">
-                    <TableSortLabel
-                      active={orderBy === 'name'}
-                      direction={orderBy === 'name' ? order : 'asc'}
-                      onClick={() => handleRequestSort('name')}
-                    >
-                      Name
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell className="table-head-cell">
-                    <TableSortLabel
-                      active={orderBy === 'email'}
-                      direction={orderBy === 'email' ? order : 'asc'}
-                      onClick={() => handleRequestSort('email')}
-                    >
-                      Email
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell className="table-head-cell">Role</TableCell>
-                  <TableCell className="table-head-cell">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {workspaceUsers[workspaceId].map(user => (
-                  <TableRow key={user.id} className="table-row">
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <IconButton className="icon-button" onClick={() => handleEditUser(user)}><Edit fontSize="small" /></IconButton>
-                        <IconButton className="icon-button" onClick={() => handleDeleteUser(user.id)}><Delete fontSize="small" /></IconButton>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+        <UserManagementTable
+          key={workspaceId}
+          users={workspaceUsers[workspaceId]}
+          order={order}
+          orderBy={orderBy}
+          handleRequestSort={handleRequestSort}
+          handleEditUser={handleEditUser}
+          handleDeleteUser={handleDeleteUser}
+          title={`Workspace: ${workspaceId}`}
+        />
       ))}
     </Container>
   );
 };
 
-export default UserManagement;
+export default AdminUserManagement;

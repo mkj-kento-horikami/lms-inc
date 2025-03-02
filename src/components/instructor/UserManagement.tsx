@@ -7,13 +7,6 @@ import {
   Typography,
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   IconButton,
   Dialog,
   DialogActions,
@@ -25,25 +18,25 @@ import {
   InputLabel,
   FormControl,
   Box,
+  Card,
+  CardContent,
+  CardActions,
 } from '@mui/material';
 import { Edit, Delete, FileCopy } from '@mui/icons-material';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
+import UserManagementTable from '../common/UserManagementTable';
 import '../../styles.css';
+import { User } from '../../types/User';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  workspaces: { workspaceId: string; role: string }[];
-}
-
-const UserManagement: React.FC = () => {
+const InstructorUserManagement: React.FC = () => {
   const { selectedWorkspace } = useWorkspace();
   const [users, setUsers] = useState<User[]>([]);
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user', isAdmin: false, workspaces: [] });
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
   const [inviteLink, setInviteLink] = useState<string>('');
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [orderBy, setOrderBy] = useState<keyof User>('name');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -95,7 +88,7 @@ const UserManagement: React.FC = () => {
       workspaces: [{ workspaceId: selectedWorkspace.workspaceId, role: newUser.role }]
     });
     setUsers([...users, { id: docRef.id, ...newUser, workspaces: [{ workspaceId: selectedWorkspace.workspaceId, role: newUser.role }] }]);
-    setNewUser({ name: '', email: '', role: 'user' });
+    setNewUser({ name: '', email: '', role: 'user', isAdmin: false, workspaces: [] });
   };
 
   const handleEditUser = (user: User) => {
@@ -124,56 +117,72 @@ const UserManagement: React.FC = () => {
     setEditingUser(null);
   };
 
+  const handleRequestSort = (property: keyof User) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>User Management</Typography>
 
-      <Typography variant="h6" gutterBottom>Add New User</Typography>
-      <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
-        <TextField
-          label="Name"
-          value={newUser.name}
-          onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Email"
-          value={newUser.email}
-          onChange={e => setNewUser({ ...newUser, email: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Role</InputLabel>
-          <Select
-            value={newUser.role}
-            onChange={e => setNewUser({ ...newUser, role: e.target.value })}
-          >
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="instructor">Instructor</MenuItem>
-          </Select>
-        </FormControl>
-        <Button type="submit" variant="contained" color="primary">Add User</Button>
-      </form>
+      <Card style={{ marginBottom: '20px' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Add New User</Typography>
+          <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
+            <TextField
+              label="Name"
+              value={newUser.name}
+              onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email"
+              value={newUser.email}
+              onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+              fullWidth
+              margin="normal"
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Role</InputLabel>
+              <Select
+                value={newUser.role}
+                onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+              >
+                <MenuItem value="user">User</MenuItem>
+                <MenuItem value="instructor">Instructor</MenuItem>
+              </Select>
+            </FormControl>
+          </form>
+        </CardContent>
+        <CardActions>
+          <Button type="submit" variant="contained" color="primary" onClick={handleAddUser}>Add User</Button>
+        </CardActions>
+      </Card>
 
-      <Typography variant="h6" gutterBottom>Invite Link</Typography>
-      <Box display="flex" alignItems="center">
-        <TextField
-          value={inviteLink}
-          fullWidth
-          margin="normal"
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <IconButton onClick={handleCopyInviteLink}>
-          <FileCopy />
-        </IconButton>
-        <Button onClick={generateInviteLink} variant="contained" color="primary" style={{ marginLeft: '10px' }}>
-          Regenerate
-        </Button>
-      </Box>
+      <Card style={{ marginBottom: '20px' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Invite Link</Typography>
+          <Box display="flex" alignItems="center">
+            <TextField
+              value={inviteLink}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <IconButton onClick={handleCopyInviteLink}>
+              <FileCopy />
+            </IconButton>
+            <Button onClick={generateInviteLink} variant="contained" color="primary" style={{ marginLeft: '10px' }}>
+              Regenerate
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit User</DialogTitle>
@@ -221,34 +230,17 @@ const UserManagement: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <Typography variant="h6" gutterBottom>Existing Users</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map(user => (
-              <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.workspaces.find((ws: any) => ws.workspaceId === selectedWorkspace?.workspaceId)?.role}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditUser(user)}><Edit /></IconButton>
-                  <IconButton onClick={() => handleDeleteUser(user.id)}><Delete /></IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <UserManagementTable
+        users={users}
+        order={order}
+        orderBy={orderBy}
+        handleRequestSort={handleRequestSort}
+        handleEditUser={handleEditUser}
+        handleDeleteUser={handleDeleteUser}
+        title="Existing Users"
+      />
     </Container>
   );
 };
 
-export default UserManagement;
+export default InstructorUserManagement;
