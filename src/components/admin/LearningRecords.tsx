@@ -1,161 +1,116 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-import {
-  Container,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TableSortLabel,
-} from '@mui/material';
-import '../../styles.css';
+import { collection, getDocs } from 'firebase/firestore';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel } from '@mui/material';
+import { LearningRecord } from '../../types/LearningRecord';
 
 const LearningRecords: React.FC = () => {
-  const [learningRecords, setLearningRecords] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [learningUrls, setLearningUrls] = useState<any[]>([]);
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [learningRecords, setLearningRecords] = useState<LearningRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-  const [orderBy, setOrderBy] = useState<keyof any>('timestamp');
+  const [orderBy, setOrderBy] = useState<keyof LearningRecord>('timestamp');
 
   useEffect(() => {
-    const fetchData = async () => {
-      const learningRecordsSnapshot = await getDocs(collection(db, 'learningRecords'));
-      const usersSnapshot = await getDocs(collection(db, 'users'));
-      const learningUrlsSnapshot = await getDocs(collection(db, 'learningUrls'));
-      const workspacesSnapshot = await getDocs(collection(db, 'workspaces'));
-
-      const learningRecordsData = learningRecordsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      const usersData = usersSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      const learningUrlsData = learningUrlsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      const workspacesData = workspacesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setLearningRecords(learningRecordsData);
-      setUsers(usersData);
-      setLearningUrls(learningUrlsData);
-      setWorkspaces(workspacesData);
+    const fetchLearningRecords = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'learningRecords'));
+        const recordsData = querySnapshot.docs.map(doc => doc.data() as LearningRecord);
+        setLearningRecords(recordsData);
+      } catch (error) {
+        console.error("Error fetching learning records: ", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchData();
+    fetchLearningRecords();
   }, []);
 
-  const handleRequestSort = (property: keyof any) => {
+  const handleRequestSort = (property: keyof LearningRecord) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const sortedLearningRecords = [...learningRecords].sort((a, b) => {
-    const aValue = a[orderBy] || '';
-    const bValue = b[orderBy] || '';
-    return (order === 'asc' ? 1 : -1) * aValue.localeCompare(bValue);
+  const sortedRecords = [...learningRecords].sort((a, b) => {
+    if (orderBy === 'timestamp') {
+      return order === 'asc'
+        ? new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        : new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    } else {
+      return order === 'asc'
+        ? (a[orderBy] < b[orderBy] ? -1 : 1)
+        : (a[orderBy] > b[orderBy] ? -1 : 1);
+    }
   });
 
-  const getUserName = (userId: string) => {
-    const user = users.find(user => user.id === userId);
-    return user ? user.name : 'Unknown User';
-  };
-
-  const getWorkspaceName = (workspaceId: string) => {
-    const workspace = workspaces.find(workspace => workspace.id === workspaceId);
-    return workspace ? workspace.name : 'Unknown Workspace';
-  };
-
-  const getLearningUrlTitle = (urlId: string) => {
-    const learningUrl = learningUrls.find(url => url.id === urlId);
-    return learningUrl ? learningUrl.title : 'Unknown Title';
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>Learning Records</Typography>
-
-      <Typography variant="h6" gutterBottom>All Learning Records</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'userId'}
-                  direction={orderBy === 'userId' ? order : 'asc'}
-                  onClick={() => handleRequestSort('userId')}
-                >
-                  User Name
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'workspaceId'}
-                  direction={orderBy === 'workspaceId' ? order : 'asc'}
-                  onClick={() => handleRequestSort('workspaceId')}
-                >
-                  Workspace
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'urlId'}
-                  direction={orderBy === 'urlId' ? order : 'asc'}
-                  onClick={() => handleRequestSort('urlId')}
-                >
-                  URL Title
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'status'}
-                  direction={orderBy === 'status' ? order : 'asc'}
-                  onClick={() => handleRequestSort('status')}
-                >
-                  Status
-                </TableSortLabel>
-              </TableCell>
-              <TableCell className="table-head-cell">
-                <TableSortLabel
-                  active={orderBy === 'timestamp'}
-                  direction={orderBy === 'timestamp' ? order : 'asc'}
-                  onClick={() => handleRequestSort('timestamp')}
-                >
-                  Timestamp
-                </TableSortLabel>
-              </TableCell>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              <TableSortLabel
+                active={orderBy === 'workspaceName'}
+                direction={orderBy === 'workspaceName' ? order : 'asc'}
+                onClick={() => handleRequestSort('workspaceName')}
+              >
+                Workspace
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={orderBy === 'userId'}
+                direction={orderBy === 'userId' ? order : 'asc'}
+                onClick={() => handleRequestSort('userId')}
+              >
+                User ID
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>User Name</TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={orderBy === 'urlId'}
+                direction={orderBy === 'urlId' ? order : 'asc'}
+                onClick={() => handleRequestSort('urlId')}
+              >
+                URL ID
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>URL Title</TableCell>
+            <TableCell>URL</TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={orderBy === 'timestamp'}
+                direction={orderBy === 'timestamp' ? order : 'asc'}
+                onClick={() => handleRequestSort('timestamp')}
+              >
+                Timestamp
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sortedRecords.map(record => (
+            <TableRow key={`${record.userId}_${record.urlId}`}>
+              <TableCell>{record.workspaceName}</TableCell>
+              <TableCell>{record.userId}</TableCell>
+              <TableCell>{record.userName}</TableCell>
+              <TableCell>{record.urlId}</TableCell>
+              <TableCell>{record.urlTitle}</TableCell>
+              <TableCell><a href={record.url} target="_blank" rel="noopener noreferrer">{record.url}</a></TableCell>
+              <TableCell>{new Date(record.timestamp).toLocaleString()}</TableCell>
+              <TableCell>{record.status}</TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedLearningRecords.map(learningRecord => (
-              <TableRow key={learningRecord.id} className="table-row">
-                <TableCell>{getUserName(learningRecord.userId)}</TableCell>
-                <TableCell>{getWorkspaceName(learningRecord.workspaceId)}</TableCell>
-                <TableCell>{getLearningUrlTitle(learningRecord.urlId)}</TableCell>
-                <TableCell>{learningRecord.status}</TableCell>
-                <TableCell>{learningRecord.timestamp}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Container>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

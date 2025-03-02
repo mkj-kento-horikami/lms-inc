@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import '../../styles.css';
+import { LearningRecord } from '../../types/LearningRecord';
 
 interface LearningURL {
   id: string;
@@ -69,10 +70,10 @@ const LearningURLs: React.FC = () => {
     fetchData();
   }, [user]);
 
-  const handleClick = async (urlId: string) => {
-    if (!user) return;
+  const handleClick = async (url: LearningURL) => {
+    if (!user || !selectedWorkspace) return;
 
-    const existingLog = learningLogs.find(log => log.urlId === urlId);
+    const existingLog = learningLogs.find(log => log.urlId === url.id);
 
     if (existingLog) {
       const logRef = doc(db, 'learningLogs', existingLog.id);
@@ -90,13 +91,32 @@ const LearningURLs: React.FC = () => {
     } else {
       const newLog = {
         userId: user.uid,
-        urlId,
+        urlId: url.id,
         status: 'complete',
         clickCount: 1,
         lastClicked: new Date().toISOString(),
       };
       const logRef = await addDoc(collection(db, 'learningLogs'), newLog);
       setLearningLogs([...learningLogs, { id: logRef.id, ...newLog }]);
+    }
+
+    const newRecord: LearningRecord = {
+      userId: user.uid,
+      userName: user.displayName || '',
+      workspaceId: selectedWorkspace.workspaceId,
+      workspaceName: selectedWorkspace.name,
+      urlId: url.id,
+      urlTitle: url.title,
+      url: url.url,
+      status: 'in progress',
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      await addDoc(collection(db, 'learningRecords'), newRecord);
+      console.log('Learning record added:', newRecord);
+    } catch (error) {
+      console.error("Error adding learning record: ", error);
     }
   };
 
@@ -124,7 +144,7 @@ const LearningURLs: React.FC = () => {
                   <TableCell>{url.title}</TableCell>
                   <TableCell>{url.description}</TableCell>
                   <TableCell>
-                    <Button onClick={() => handleClick(url.id)} href={url.url} target="_blank" rel="noopener noreferrer">
+                    <Button onClick={() => handleClick(url)} href={url.url} target="_blank" rel="noopener noreferrer">
                       {url.url}
                     </Button>
                   </TableCell>
