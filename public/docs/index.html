@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS ユーザーマニュアル</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        #nav {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        #content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        .role-selector {
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        #toc {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        #toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>LMS ユーザーマニュアル</h1>
+        <div class="role-selector">
+            <select id="roleSelect" onchange="changeRole()">
+                <option value="user">一般ユーザー</option>
+                <option value="instructor">インストラクター</option>
+                <option value="admin">管理者</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="nav">
+        <div id="toc"></div>
+    </div>
+
+    <div id="content"></div>
+
+    <script>
+        const sections = {
+            common: ['introduction', 'getting-started', 'troubleshooting'],
+            user: ['dashboard', 'learning-resources', 'learning-logs', 'profile'],
+            instructor: ['dashboard', 'user-management', 'learning-logs', 'invite-management'],
+            admin: ['dashboard', 'user-management', 'resource-management', 'workspace-management']
+        };
+
+        async function loadMarkdownFile(path) {
+            try {
+                const response = await fetch(path);
+                if (!response.ok) throw new Error('File not found');
+                const text = await response.text();
+                return marked.parse(text);
+            } catch (error) {
+                console.error('Error loading markdown:', error);
+                return '<p>コンテンツを読み込めませんでした。</p>';
+            }
+        }
+
+        async function updateContent(role) {
+            const content = document.getElementById('content');
+            const toc = document.getElementById('toc');
+            content.innerHTML = '';
+            toc.innerHTML = '<h2>目次</h2><ul>';
+
+            // 共通セクションを読み込む
+            for (const section of sections.common) {
+                const html = await loadMarkdownFile(`common/${section}.md`);
+                content.innerHTML += `<div class="section" id="${section}">${html}</div>`;
+                toc.innerHTML += `<li><a href="#${section}">${section}</a></li>`;
+            }
+
+            // ロール固有のセクションを読み込む
+            for (const section of sections[role]) {
+                const html = await loadMarkdownFile(`${role}/${section}.md`);
+                content.innerHTML += `<div class="section" id="${role}-${section}">${html}</div>`;
+                toc.innerHTML += `<li><a href="#${role}-${section}">${section}</a></li>`;
+            }
+
+            toc.innerHTML += '</ul>';
+        }
+
+        function changeRole() {
+            const role = document.getElementById('roleSelect').value;
+            updateContent(role);
+        }
+
+        // 初期表示
+        window.onload = () => changeRole();
+    </script>
+</body>
+</html>

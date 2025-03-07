@@ -50,6 +50,19 @@ const Header: React.FC = () => {
           <li><Link to="/logout">Logout</Link></li>
           <li><Link to="/profile">Profile</Link></li>
           <li><Link to="/dashboard">Dashboard</Link></li>
+          {user && (
+            <li>
+              <Link
+                to="/docs/index.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open('/docs/index.html', '_blank');
+                }}
+              >
+                マニュアル
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
       {user && (
