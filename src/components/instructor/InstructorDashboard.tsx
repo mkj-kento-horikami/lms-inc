@@ -136,7 +136,7 @@ const InstructorDashboard: React.FC = () => {
 
   return (
     <div>
-      <h2>Instructor Dashboard</h2>
+      <h2>講師ダッシュボード</h2>
       {error && <p>{error}</p>}
       <div>
         <h3>ユーザー一覧</h3>
@@ -154,8 +154,8 @@ const InstructorDashboard: React.FC = () => {
                 <td>{user.email}</td>
                 <td>
                   <select value={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
-                    <option value="user">user</option>
-                    <option value="instructor">instructor</option>
+                    <option value="user">ユーザー</option>
+                    <option value="instructor">講師</option>
                   </select>
                 </td>
                 <td>

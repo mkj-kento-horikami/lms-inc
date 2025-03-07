@@ -9,8 +9,8 @@ import WorkspaceList from './WorkspaceList';
 const AdminDashboard: React.FC = () => {
   return (
     <div>
-      <h2>Admin Dashboard</h2>
-      <p>Welcome, admin!</p>
+      <h2>管理者ダッシュボード</h2>
+      <p>管理者の方、ようこそ！</p>
       <UserList />
       <LearningResourceForm />
       <LearningResourceList />

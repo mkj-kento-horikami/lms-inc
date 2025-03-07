@@ -45,11 +45,11 @@ const Header: React.FC = () => {
     <header>
       <nav>
         <ul>
-          {!user && <li><Link to="/signup">Signup</Link></li>}
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/logout">Logout</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/dashboard">Dashboard</Link></li>
+          {!user && <li><Link to="/signup">新規登録</Link></li>}
+          <li><Link to="/login">ログイン</Link></li>
+          <li><Link to="/logout">ログアウト</Link></li>
+          <li><Link to="/profile">プロフィール</Link></li>
+          <li><Link to="/dashboard">ダッシュボード</Link></li>
           {user && (
             <li>
               <Link
@@ -67,10 +67,10 @@ const Header: React.FC = () => {
       </nav>
       {user && (
         <div>
-          <p>Email: {user.email}</p>
-          <p>UID: {user.uid}</p>
-          {workspaceName && <p>Workspace: {workspaceName}</p>}
-          {role && <p>Role: {role}</p>}
+          <p>メールアドレス: {user.email}</p>
+          <p>ユーザーID: {user.uid}</p>
+          {workspaceName && <p>ワークスペース: {workspaceName}</p>}
+          {role && <p>権限: {role}</p>}
           <WorkspaceSwitcher />
         </div>
       )}

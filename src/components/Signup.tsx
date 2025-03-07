@@ -73,7 +73,7 @@ const Signup: React.FC = () => {
 
   return (
     <div>
-      <h2>Signup</h2>
+      <h2>新規登録</h2>
       {workspaceName ? (
         <form onSubmit={handleSignup}>
           <div>
@@ -81,7 +81,7 @@ const Signup: React.FC = () => {
             <input type="text" value={workspaceName} readOnly />
           </div>
           <div>
-            <label>Email</label>
+            <label>メールアドレス</label>
             <input
               type="email"
               value={email}
@@ -90,7 +90,7 @@ const Signup: React.FC = () => {
             />
           </div>
           <div>
-            <label>Password</label>
+            <label>パスワード</label>
             <input
               type="password"
               value={password}
@@ -98,7 +98,7 @@ const Signup: React.FC = () => {
               required
             />
           </div>
-          <button type="submit">Signup</button>
+          <button type="submit">新規登録</button>
         </form>
       ) : (
         <p>{error}</p>

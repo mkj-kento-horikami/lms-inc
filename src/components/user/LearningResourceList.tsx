@@ -105,7 +105,7 @@ const LearningResourceList: React.FC = () => {
                 </a>
               </td>
               <td>{resource.clickCount}</td>
-              <td>{resource.lastClickedAt ? resource.lastClickedAt.toLocaleString() : 'N/A'}</td>
+              <td>{resource.lastClickedAt ? resource.lastClickedAt.toLocaleString() : '未学習'}</td>
             </tr>
           ))}
         </tbody>

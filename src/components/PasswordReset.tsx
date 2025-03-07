@@ -21,16 +21,16 @@ const PasswordReset: React.FC = () => {
 
   return (
     <div>
-      <h2>Password Reset</h2>
+      <h2>パスワード再設定</h2>
       <form onSubmit={handlePasswordReset}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          placeholder="メールアドレス"
           required
         />
-        <button type="submit">Send Password Reset Email</button>
+        <button type="submit">パスワード再設定メールを送信</button>
       </form>
       {message && <p>{message}</p>}
       {error && <p>{error}</p>}
