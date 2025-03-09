@@ -1,112 +1,145 @@
-# inc-lms Project
+# inc-lms プロジェクト
 
-## Overview
-The inc-lms project is a web application built using TypeScript and React. It serves as a learning management system (LMS) that provides a user-friendly interface for managing educational content and user interactions.
+## 概要
+inc-lmsプロジェクトは、TypeScriptとReactを使用して構築されたウェブアプリケーションです。教育コンテンツとユーザーインタラクションを管理するための使いやすいインターフェースを提供する学習管理システム（LMS）として機能します。
 
-## Project Structure
-The project is organized into the following directories and files:
+## プロジェクト構造
+プロジェクトは以下のディレクトリとファイルで構成されています：
 
-- **src/**: Contains the source code for the application.
-  - **components/**: Contains React components, including the main application component.
-    - **App.tsx**: The main component that manages the layout and routing of the application.
-  - **hooks/**: Contains custom hooks for reusable logic.
-    - **index.ts**: Defines custom hooks for use within components.
-  - **styles/**: Contains CSS files for styling the application.
-    - **App.css**: Styles for the main application component.
-  - **types/**: Contains TypeScript type definitions.
-    - **index.ts**: Defines interfaces and types for type safety.
-  - **index.tsx**: The entry point of the application that renders the React app to the DOM.
-  - **react-app-env.d.ts**: Defines environment settings for the React application.
+- **src/**: アプリケーションのソースコードを格納します。
+  - **components/**: Reactコンポーネントを格納します。
+    - **App.tsx**: アプリケーションのレイアウトとルーティングを管理するメインコンポーネント。
+    - **admin/**: 管理者向け機能のコンポーネント（ダッシュボード、ユーザー管理など）。
+    - **instructor/**: 講師向け機能のコンポーネント（学習記録管理、URL管理など）。
+    - **user/**: 一般ユーザー向け機能のコンポーネント（学習記録閲覧、URL一覧など）。
+    - **common/**: 共通で使用されるコンポーネント（進捗バー、テーブルなど）。
+  - **contexts/**: Reactコンテキストを格納します。
+    - **AuthContext.tsx**: 認証状態の管理と共有。
+    - **WorkspaceContext.tsx**: ワークスペース情報の管理と共有。
+  - **hooks/**: 再利用可能なカスタムフックを格納します。
+    - **useAuth.ts**: 認証関連のロジック。
+    - **useLearningLogs.ts**: 学習記録の取得と管理。
+    - **useLogout.ts**: ログアウト処理のロジック。
+  - **styles/**: アプリケーションのスタイリングのためのCSSファイルを格納します。
+    - **App.css**: メインアプリケーションのスタイル。
+    - **global.css**: グローバルに適用されるスタイル。
+  - **types/**: TypeScriptの型定義を格納します。
+    - **LearningRecord.ts**: 学習記録の型定義。
+    - **LearningURL.ts**: 学習URLの型定義。
+    - **User.ts**: ユーザー情報の型定義。
+    - **Workspace.ts**: ワークスペース情報の型定義。
+  - **firebaseConfig.ts**: Firebase設定とセットアップ。
+  - **index.tsx**: アプリケーションのエントリーポイント。
+  - **setupTests.ts**: テスト環境のセットアップ設定。
 
-- **public/**: Contains public assets and HTML templates.
-  - **index.html**: The HTML template for the application.
-  - **manifest.json**: The web app manifest that defines metadata and icons.
+- **public/**: 公開アセットとHTMLテンプレートを格納します。
+  - **index.html**: アプリケーションのHTMLテンプレート。
+  - **manifest.json**: メタデータとアイコンを定義するウェブアプリマニフェスト。
 
-- **package.json**: The npm configuration file that lists dependencies and scripts.
+- **Docker関連**:
+  - **Dockerfile**: アプリケーションのコンテナ化設定。
+  - **docker-compose.yml**: 開発環境のコンテナ構成定義。
 
-- **tsconfig.json**: The TypeScript configuration file that specifies compiler options.
+- **設定ファイル**:
+  - **package.json**: 依存関係とスクリプトを記載したnpm設定ファイル。
+  - **tsconfig.json**: TypeScriptコンパイラオプションの設定。
+  - **jest.config.js**: Jestテストフレームワークの設定。
+  - **firebase.json**: Firebase設定ファイル。
+  - **firestore.rules**: Firestoreセキュリティルール。
+  - **firestore.indexes.json**: Firestoreインデックス定義。
 
-- **README.md**: This documentation file that provides an overview and setup instructions for the project.
-
-## Setup Instructions
-1. Clone the repository:
+## セットアップ手順
+1. リポジトリをクローンします：
    ```
    git clone <repository-url>
    ```
 
-2. Navigate to the project directory:
+2. プロジェクトディレクトリに移動します：
    ```
    cd inc-lms
    ```
 
-3. Install dependencies:
+3. 依存関係をインストールします：
    ```
    npm install
    ```
 
-4. Start the development server:
+4. 開発サーバーを起動します：
    ```
    npm start
    ```
 
-## Usage
-Once the development server is running, you can access the application in your web browser at `http://localhost:3000`. You can explore the features of the learning management system and interact with the various components.
+### Dockerを使用する場合：
+1. Dockerコンテナをビルドして起動：
+   ```
+   docker-compose up --build
+   ```
+   アプリケーションは http://localhost:3000 でアクセス可能になります。
 
-## Learning Management System (LMS) Overview
-This LMS is built using Firebase Firestore as a NoSQL database. It supports three user roles: admin, instructor, and user, with role-based access control (RBAC). The system allows workspace-based management of learning materials and tracks user progress.
+## テスト
+Jestを使用してユニットテストを実行します：
+```
+npm test
+```
 
-## Requirements
+## 使用方法
+開発サーバーが起動したら、ウェブブラウザで`http://localhost:3000`にアクセスできます。学習管理システムの機能を探索し、様々なコンポーネントと対話することができます。
 
-### 1. User Roles & Permissions
+## 学習管理システム（LMS）概要
+このLMSは、NoSQLデータベースとしてFirebase Firestoreを使用して構築されています。管理者、講師、ユーザーの3つのユーザーロールをサポートし、ロールベースのアクセス制御（RBAC）を実装しています。システムは、学習教材のワークスペースベースの管理とユーザーの進捗状況の追跡を可能にします。
 
-#### Role: Admin
-- Create workspaces and invite the initial instructor
-- Manage all workspaces and their users
-- Change user roles within a workspace
-- Invite other admin users
-- Manage learning URLs (create, update, delete)
-- View all learning records across workspaces
+## 要件
 
-#### Role: Instructor
-- Invite and remove user members from their workspace
-- Change user roles within their workspace
-- View all learning records within their workspace
-- Access learning URLs
-- View their own learning records
+### 1. ユーザーロールと権限
 
-#### Role: User
-- Access learning URLs
-- View their own learning records
+#### ロール：管理者
+- ワークスペースの作成と初期講師の招待
+- すべてのワークスペースとそのユーザーの管理
+- ワークスペース内のユーザーロールの変更
+- 他の管理者ユーザーの招待
+- 学習URL（作成、更新、削除）の管理
+- すべてのワークスペースの学習記録の閲覧
 
-### 2. Key Functionalities
+#### ロール：講師
+- 自身のワークスペースへのユーザーメンバーの招待と削除
+- 自身のワークスペース内のユーザーロールの変更
+- 自身のワークスペース内のすべての学習記録の閲覧
+- 学習URLへのアクセス
+- 自身の学習記録の閲覧
 
-#### Admin Features
-- Create and manage workspaces
-- Invite instructors to workspaces
-- Manage all users and their roles
-- Manage learning URLs accessible to workspaces
-- View all users and learning progress data across workspaces
-- Invite additional admin users
+#### ロール：ユーザー
+- 学習URLへのアクセス
+- 自身の学習記録の閲覧
 
-#### Instructor Features
-- Manage users in their workspace (invite/remove users, change roles)
-- View learning records of workspace users
-- Access learning URLs and track their own progress
+### 2. 主要機能
 
-#### User Features
-- Access assigned learning URLs
-- View their own learning progress
+#### 管理者機能
+- ワークスペースの作成と管理
+- ワークスペースへの講師の招待
+- すべてのユーザーとそのロールの管理
+- ワークスペースがアクセスできる学習URLの管理
+- すべてのワークスペースのユーザーと学習進捗データの閲覧
+- 追加の管理者ユーザーの招待
 
-## Data Structure (Firestore)
+#### 講師機能
+- 自身のワークスペース内のユーザー管理（ユーザーの招待/削除、ロール変更）
+- ワークスペースユーザーの学習記録の閲覧
+- 学習URLへのアクセスと自身の進捗の追跡
 
-Firestore uses a collection-document structure. The main collections are as follows:
+#### ユーザー機能
+- 割り当てられた学習URLへのアクセス
+- 自身の学習進捗の閲覧
 
-### 1. Users Collection
-Path: `/users/{userId}`
+## データ構造（Firestore）
+
+Firestoreはコレクション-ドキュメント構造を使用します。主なコレクションは以下の通りです：
+
+### 1. ユーザーコレクション
+パス: `/users/{userId}`
 ```json
 {
   "id": "user123",
-  "name": "Taro Yamada",
+  "name": "山田太郎",
   "email": "taro@example.com",
   "isAdmin": true,
   "workspaces": [
@@ -115,38 +148,38 @@ Path: `/users/{userId}`
   ]
 }
 ```
-Stores user information.
-isAdmin: Boolean flag indicating whether the user is an admin.
-workspaces: List of workspaces the user belongs to, along with their role in each workspace.
+ユーザー情報を保存します。
+isAdmin: ユーザーが管理者かどうかを示すブール値フラグ。
+workspaces: ユーザーが所属するワークスペースのリストと、各ワークスペースでのロール。
 
-### 2. Workspaces Collection
-Path: `/workspaces/{workspaceId}`
+### 2. ワークスペースコレクション
+パス: `/workspaces/{workspaceId}`
 ```json
 {
   "id": "workspaceA",
-  "name": "AI Bootcamp",
+  "name": "AIブートキャンプ",
   "createdBy": "admin123"
 }
 ```
-Stores workspace information.
-createdBy: Admin who created the workspace.
+ワークスペース情報を保存します。
+createdBy: ワークスペースを作成した管理者。
 
-### 3. Learning URLs Collection
-Path: `/learningUrls/{workspaceId}_{urlId}`
+### 3. 学習URLコレクション
+パス: `/learningUrls/{workspaceId}_{urlId}`
 ```json
 {
   "id": "url456",
   "category": "AI",
-  "title": "AI Bootcamp",
-  "description": "Learn the basics of AI",
+  "title": "AIブートキャンプ",
+  "description": "AIの基礎を学ぶ",
   "url": "https://example.com/learning-course",
   "createdBy": "admin123"
 }
 ```
-Stores learning URLs for each workspace.
+各ワークスペースの学習URLを保存します。
 
-### 4. Learning Records Collection
-Path: `/learningRecords/{userId}_{urlId}`
+### 4. 学習記録コレクション
+パス: `/learningRecords/{userId}_{urlId}`
 ```json
 {
   "userId": "user123",
@@ -156,34 +189,34 @@ Path: `/learningRecords/{userId}_{urlId}`
   "timestamp": "2025-02-27T12:00:00Z"
 }
 ```
-Tracks learning progress for each user.
+各ユーザーの学習進捗を追跡します。
 
-## Firestore Security Rules
-These rules enforce access control based on user roles.
+## Firestoreセキュリティルール
+これらのルールは、ユーザーロールに基づいてアクセス制御を実施します。
 
 ```plaintext
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // User Data
+    // ユーザーデータ
     match /users/{userId} {
       allow read, update: if request.auth.uid == userId;
     }
 
-    // Workspace Management
+    // ワークスペース管理
     match /workspaces/{workspaceId} {
       allow read: if request.auth != null;
       allow write: if request.auth.token.isAdmin == true;
     }
 
-    // Learning URLs
+    // 学習URL
     match /learningUrls/{workspaceId}_{urlId} {
       allow read: if request.auth != null;
       allow write: if request.auth.token.isAdmin == true;
     }
 
-    // Learning Records
+    // 学習記録
     match /learningRecords/{userId}_{urlId} {
       allow read, write: if request.auth.uid == userId || 
                             request.auth.token.workspaces[workspaceId].role == "instructor";
@@ -192,15 +225,20 @@ service cloud.firestore {
 }
 ```
 
-## Deployment Notes
-- Ensure Firebase Authentication is enabled for user authentication.
-- Use Firestore indexes for optimized querying.
-- Configure Firebase Hosting for serving the front-end.
+## デプロイメント注意事項
+- ユーザー認証のためにFirebase Authenticationを有効にしてください。
+- 最適化されたクエリのためにFirestoreインデックスを使用してください。
+- フロントエンドの提供にFirebase Hostingを設定してください。
+- Dockerを使用する場合は、環境変数を適切に設定してください。
 
-This README provides an overview of the system requirements, Firestore database structure, and security rules. Modify as needed for additional business logic or features.
+## 開発ガイドライン
+- コンポーネントは機能ごとにディレクトリを分けて管理します（admin/, instructor/, user/）。
+- 共通のコンポーネントはcommon/ディレクトリに配置します。
+- カスタムフックを活用して、ロジックの再利用を促進します。
+- テストカバレッジを維持するため、新機能の追加時にはテストも追加してください。
 
-## Contributing
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+## 貢献
+貢献を歓迎します！提案や改善のためのプルリクエストの提出やイシューのオープンをお気軽にどうぞ。
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
+## ライセンス
+このプロジェクトはMITライセンスの下でライセンスされています。詳細については、LICENSEファイルを参照してください。
