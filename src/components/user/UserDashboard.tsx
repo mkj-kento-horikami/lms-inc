@@ -43,14 +43,14 @@ const UserDashboard: React.FC = () => {
       });
 
       learningRecordsData.forEach(record => {
-        if (record.clickCount > 0) {
+        if (record.status === 'completed') {
           categoryCounts[record.category].completed += 1;
         }
       });
 
       const progressData = Object.keys(categoryCounts).map(category => ({
         category,
-        progress: (categoryCounts[category].completed / categoryCounts[category].total) * 100,
+        progress: Math.ceil((categoryCounts[category].completed / categoryCounts[category].total) * 100),
         completed: categoryCounts[category].completed,
         total: categoryCounts[category].total,
       }));
@@ -60,7 +60,7 @@ const UserDashboard: React.FC = () => {
       // Calculate overall progress
       const totalCompleted = progressData.reduce((sum, category) => sum + category.completed, 0);
       const totalURLs = progressData.reduce((sum, category) => sum + category.total, 0);
-      const overallProgress = (totalCompleted / totalURLs) * 100;
+      const overallProgress = Math.ceil((totalCompleted / totalURLs) * 100);
       setOverallProgress(overallProgress);
     };
 

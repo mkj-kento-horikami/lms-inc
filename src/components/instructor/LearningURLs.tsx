@@ -91,11 +91,20 @@ const LearningURLs: React.FC = () => {
     }
   };
 
+  const handleStatusChange = async (recordId: string, newStatus: 'completed' | 'not completed') => {
+    const recordRef = doc(db, 'learningRecords', recordId);
+    await updateDoc(recordRef, { status: newStatus });
+    setLearningRecords(prevRecords =>
+      prevRecords.map(record => (record.id === recordId ? { ...record, status: newStatus } : record))
+    );
+  };
+
   return (
     <LearningURLsTable
       learningResources={learningURLs}
       learningRecords={learningRecords}
       handleClick={handleClick}
+      handleStatusChange={handleStatusChange}
     />
   );
 };
