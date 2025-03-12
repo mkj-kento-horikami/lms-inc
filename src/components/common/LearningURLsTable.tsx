@@ -49,8 +49,8 @@ const LearningURLsTable: React.FC<LearningURLsTableProps> = ({ learningResources
               return (
                 <TableRow key={resource.id}>
                   <TableCell>{resource.category}</TableCell>
-                  <TableCell>{resource.title}</TableCell>
-                  <TableCell>{resource.description}</TableCell>
+                  <TableCell>{resource.mainTitle}</TableCell>
+                  <TableCell>{resource.mainDescription}</TableCell>
                   <TableCell>
                     <Button onClick={() => handleClick(resource)} href={resource.url} target="_blank" rel="noopener noreferrer">
                       {resource.url}

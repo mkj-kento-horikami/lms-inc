@@ -78,7 +78,7 @@ const LearningURLs: React.FC = () => {
         workspaceId: selectedWorkspace.workspaceId,
         workspaceName: selectedWorkspace.name,
         urlId: resource.id,
-        urlTitle: resource.title,
+        urlTitle: resource.mainTitle,
         url: resource.url,
         category: resource.category, // category プロパティを追加
         status: 'completed',

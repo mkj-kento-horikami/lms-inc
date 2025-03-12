@@ -6,7 +6,6 @@ WORKDIR /app
 
 # 依存関係をインストール
 COPY package.json ./
-COPY package-lock.json ./
 RUN npm install --legacy-peer-deps
 
 # アプリケーションのソースコードをコピー
