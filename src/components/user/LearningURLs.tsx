@@ -78,7 +78,7 @@ const LearningURLs: React.FC = () => {
         workspaceId: selectedWorkspace.workspaceId,
         workspaceName: selectedWorkspace.name,
         urlId: resource.id,
-        urlTitle: resource.title,
+        urlTitle: resource.mainTitle,
         url: resource.url,
         category: resource.category, // category プロパティを追加
         status: 'completed',
@@ -91,11 +91,20 @@ const LearningURLs: React.FC = () => {
     }
   };
 
+  const handleStatusChange = async (recordId: string, newStatus: 'completed' | 'not completed') => {
+    const recordRef = doc(db, 'learningRecords', recordId);
+    await updateDoc(recordRef, { status: newStatus });
+    setLearningRecords(prevRecords =>
+      prevRecords.map(record => (record.id === recordId ? { ...record, status: newStatus } : record))
+    );
+  };
+
   return (
     <LearningURLsTable
       learningResources={learningURLs}
       learningRecords={learningRecords}
       handleClick={handleClick}
+      handleStatusChange={handleStatusChange}
     />
   );
 };
