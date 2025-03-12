@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent, MouseEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import {
   collection,
   getDocs,
@@ -6,8 +6,6 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  DocumentData,
-  QueryDocumentSnapshot
 } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import {
@@ -33,7 +31,6 @@ import {
   CardContent,
   CardActions,
   Box,
-  Divider,
 } from '@mui/material';
 import { Edit, Delete, Add, Remove } from '@mui/icons-material';
 import { LearningURL, Content } from '../../types/LearningURL';
@@ -76,18 +73,6 @@ const LearningURLManagement: React.FC = () => {
     setNewLearningUrl({
       ...newLearningUrl,
       contents: newContents
-    });
-  };
-
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleAddLearningUrl();
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Omit<LearningURL, 'id' | 'contents'>) => {
-    setNewLearningUrl({
-      ...newLearningUrl,
-      [field]: e.target.value
     });
   };
 
