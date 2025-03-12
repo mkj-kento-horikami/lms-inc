@@ -114,6 +114,7 @@ const LearningURLManagement: React.FC = () => {
       category: '',
       mainTitle: '',
       mainDescription: '',
+      url: '',
       contents: [{ title: '', description: '', url: '' }]
     });
   };
