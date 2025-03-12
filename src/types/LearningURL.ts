@@ -12,4 +12,5 @@ export interface LearningURL {
   contents: Content[];
   createdBy?: string;
   title?: string;
+  url: string;
 }
