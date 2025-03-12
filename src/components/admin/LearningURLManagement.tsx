@@ -232,7 +232,7 @@ const LearningURLManagement: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Learning URL Management</Typography>
+      <Typography variant="h4" gutterBottom>学習URL管理</Typography>
       
       {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
@@ -250,24 +250,24 @@ const LearningURLManagement: React.FC = () => {
         <>
           <Card style={{ marginBottom: '20px' }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>Add New Learning URL</Typography>
+              <Typography variant="h6" gutterBottom>新規学習URL追加</Typography>
               <form onSubmit={e => { e.preventDefault(); handleAddLearningUrl(); }}>
                 <TextField
-                  label="Category"
+                  label="カテゴリー"
                   value={newLearningUrl.category}
                   onChange={e => setNewLearningUrl({ ...newLearningUrl, category: e.target.value })}
                   fullWidth
                   margin="normal"
                 />
                 <TextField
-                  label="Main Title"
+                  label="メインタイトル"
                   value={newLearningUrl.mainTitle}
                   onChange={e => setNewLearningUrl({ ...newLearningUrl, mainTitle: e.target.value })}
                   fullWidth
                   margin="normal"
                 />
                 <TextField
-                  label="Main Description"
+                  label="メイン説明"
                   value={newLearningUrl.mainDescription}
                   onChange={e => setNewLearningUrl({ ...newLearningUrl, mainDescription: e.target.value })}
                   fullWidth
@@ -276,11 +276,11 @@ const LearningURLManagement: React.FC = () => {
                   rows={2}
                 />
                 
-                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Contents</Typography>
+                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>コンテンツ</Typography>
                 {newLearningUrl.contents.map((content, index) => (
                   <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="subtitle2">Content #{index + 1}</Typography>
+                      <Typography variant="subtitle2">コンテンツ #{index + 1}</Typography>
                       {index > 0 && (
                         <IconButton onClick={() => handleRemoveContent(index)} size="small">
                           <Remove />
@@ -288,14 +288,14 @@ const LearningURLManagement: React.FC = () => {
                       )}
                     </Box>
                     <TextField
-                      label="Content Title"
+                      label="コンテンツタイトル"
                       value={content.title}
                       onChange={e => handleContentChange(index, 'title', e.target.value)}
                       fullWidth
                       margin="normal"
                     />
                     <TextField
-                      label="Content Description"
+                      label="コンテンツ説明"
                       value={content.description}
                       onChange={e => handleContentChange(index, 'description', e.target.value)}
                       fullWidth
@@ -304,7 +304,7 @@ const LearningURLManagement: React.FC = () => {
                       rows={2}
                     />
                     <TextField
-                      label="Content URL"
+                      label="コンテンツURL"
                       value={content.url}
                       onChange={e => handleContentChange(index, 'url', e.target.value)}
                       fullWidth
@@ -318,13 +318,13 @@ const LearningURLManagement: React.FC = () => {
                   variant="outlined"
                   sx={{ mt: 1, mb: 2 }}
                 >
-                  Add Content
+                  コンテンツを追加
                 </Button>
               </form>
             </CardContent>
             <CardActions>
               <Button type="submit" variant="contained" color="primary" onClick={handleAddLearningUrl}>
-                Add Learning URL
+                学習URLを追加
               </Button>
               <input
                 accept=".csv"
@@ -335,36 +335,36 @@ const LearningURLManagement: React.FC = () => {
               />
               <label htmlFor="file-upload">
                 <Button variant="contained" color="primary" component="span">
-                  Upload CSV
+                  CSVをアップロード
                 </Button>
               </label>
             </CardActions>
           </Card>
 
           <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Edit Learning URL</DialogTitle>
+            <DialogTitle>学習URLを編集</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Update the learning URL information below.
+                以下の学習URL情報を更新してください。
               </DialogContentText>
               {editingLearningUrl && (
                 <form onSubmit={e => { e.preventDefault(); handleUpdateLearningUrl(); }}>
                   <TextField
-                    label="Category"
+                    label="カテゴリー"
                     value={editingLearningUrl.category}
                     onChange={e => setEditingLearningUrl({ ...editingLearningUrl, category: e.target.value })}
                     fullWidth
                     margin="normal"
                   />
                   <TextField
-                    label="Main Title"
+                    label="メインタイトル"
                     value={editingLearningUrl.mainTitle}
                     onChange={e => setEditingLearningUrl({ ...editingLearningUrl, mainTitle: e.target.value })}
                     fullWidth
                     margin="normal"
                   />
                   <TextField
-                    label="Main Description"
+                    label="メイン説明"
                     value={editingLearningUrl.mainDescription}
                     onChange={e => setEditingLearningUrl({ ...editingLearningUrl, mainDescription: e.target.value })}
                     fullWidth
@@ -373,17 +373,17 @@ const LearningURLManagement: React.FC = () => {
                     rows={2}
                   />
                   
-                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Contents</Typography>
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>コンテンツ</Typography>
                   {editingLearningUrl.contents.map((content, index) => (
                     <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="subtitle2">Content #{index + 1}</Typography>
+                        <Typography variant="subtitle2">コンテンツ #{index + 1}</Typography>
                         {index > 0 && (
-                          <IconButton 
+                          <IconButton
                             onClick={() => {
                               const newContents = editingLearningUrl.contents.filter((_, i) => i !== index);
                               setEditingLearningUrl({ ...editingLearningUrl, contents: newContents });
-                            }} 
+                            }}
                             size="small"
                           >
                             <Remove />
@@ -391,7 +391,7 @@ const LearningURLManagement: React.FC = () => {
                         )}
                       </Box>
                       <TextField
-                        label="Content Title"
+                        label="コンテンツタイトル"
                         value={content.title}
                         onChange={e => {
                           const newContents = [...editingLearningUrl.contents];
@@ -402,7 +402,7 @@ const LearningURLManagement: React.FC = () => {
                         margin="normal"
                       />
                       <TextField
-                        label="Content Description"
+                        label="コンテンツ説明"
                         value={content.description}
                         onChange={e => {
                           const newContents = [...editingLearningUrl.contents];
@@ -415,7 +415,7 @@ const LearningURLManagement: React.FC = () => {
                         rows={2}
                       />
                       <TextField
-                        label="Content URL"
+                        label="コンテンツURL"
                         value={content.url}
                         onChange={e => {
                           const newContents = [...editingLearningUrl.contents];
@@ -438,18 +438,18 @@ const LearningURLManagement: React.FC = () => {
                     variant="outlined"
                     sx={{ mt: 1, mb: 2 }}
                   >
-                    Add Content
+                    コンテンツを追加
                   </Button>
                   <DialogActions>
-                    <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button type="submit" color="primary">Update Learning URL</Button>
+                    <Button onClick={handleClose} color="primary">キャンセル</Button>
+                    <Button type="submit" color="primary">更新</Button>
                   </DialogActions>
                 </form>
               )}
             </DialogContent>
           </Dialog>
 
-          <Typography variant="h6" gutterBottom>Existing Learning URLs</Typography>
+          <Typography variant="h6" gutterBottom>登録済み学習URL</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -460,7 +460,7 @@ const LearningURLManagement: React.FC = () => {
                       direction={orderBy === 'category' ? order : 'asc'}
                       onClick={() => handleRequestSort('category')}
                     >
-                      Category
+                      カテゴリー
                     </TableSortLabel>
                   </TableCell>
                   <TableCell className="table-head-cell">
@@ -469,7 +469,7 @@ const LearningURLManagement: React.FC = () => {
                       direction={orderBy === 'mainTitle' ? order : 'asc'}
                       onClick={() => handleRequestSort('mainTitle')}
                     >
-                      Main Title
+                      メインタイトル
                     </TableSortLabel>
                   </TableCell>
                   <TableCell className="table-head-cell">
@@ -478,13 +478,13 @@ const LearningURLManagement: React.FC = () => {
                       direction={orderBy === 'mainDescription' ? order : 'asc'}
                       onClick={() => handleRequestSort('mainDescription')}
                     >
-                      Main Description
+                      メイン説明
                     </TableSortLabel>
                   </TableCell>
                   <TableCell className="table-head-cell">
-                    Contents
+                    コンテンツ
                   </TableCell>
-                  <TableCell className="table-head-cell">Actions</TableCell>
+                  <TableCell className="table-head-cell">操作</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

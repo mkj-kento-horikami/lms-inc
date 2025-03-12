@@ -177,28 +177,28 @@ const AdminUserManagement: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>User Management</Typography>
+      <Typography variant="h4" gutterBottom>ユーザー管理</Typography>
 
       <Card style={{ marginBottom: '20px' }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>Add New User</Typography>
+          <Typography variant="h6" gutterBottom>新規ユーザー追加</Typography>
           <form onSubmit={e => { e.preventDefault(); handleAddUser(); }}>
             <TextField
-              label="Name"
+              label="お名前"
               value={newUser.name}
               onChange={e => setNewUser({ ...newUser, name: e.target.value })}
               fullWidth
               margin="normal"
             />
             <TextField
-              label="Email"
+              label="メールアドレス"
               value={newUser.email}
               onChange={e => setNewUser({ ...newUser, email: e.target.value })}
               fullWidth
               margin="normal"
             />
             <TextField
-              label="Password"
+              label="パスワード"
               type="password"
               value={newUser.password}
               onChange={e => setNewUser({ ...newUser, password: e.target.value })}
@@ -212,32 +212,32 @@ const AdminUserManagement: React.FC = () => {
                   onChange={e => setNewUser({ ...newUser, isAdmin: e.target.checked })}
                 />
               }
-              label="Is Admin"
+              label="管理者権限"
             />
           </form>
         </CardContent>
         <CardActions>
-          <Button type="submit" variant="contained" color="primary" onClick={handleAddUser}>Add User</Button>
+          <Button type="submit" variant="contained" color="primary" onClick={handleAddUser}>追加</Button>
         </CardActions>
       </Card>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Edit User</DialogTitle>
+        <DialogTitle>ユーザー編集</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Update the user information below.
+            ユーザー情報を更新してください。
           </DialogContentText>
           {editingUser && (
             <form onSubmit={e => { e.preventDefault(); handleUpdateUser(); }}>
               <TextField
-                label="Name"
+                label="お名前"
                 value={editingUser.name}
                 onChange={e => setEditingUser({ ...editingUser, name: e.target.value })}
                 fullWidth
                 margin="normal"
               />
               <TextField
-                label="Email"
+                label="メールアドレス"
                 value={editingUser.email}
                 onChange={e => setEditingUser({ ...editingUser, email: e.target.value })}
                 fullWidth
@@ -250,15 +250,15 @@ const AdminUserManagement: React.FC = () => {
                     onChange={e => setEditingUser({ ...editingUser, isAdmin: e.target.checked })}
                   />
                 }
-                label="Is Admin"
+                label="管理者権限"
               />
               <TableContainer component={Paper}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Workspace</TableCell>
-                      <TableCell>Role</TableCell>
-                      <TableCell>Actions</TableCell>
+                      <TableCell>ワークスペース</TableCell>
+                      <TableCell>権限</TableCell>
+                      <TableCell>操作</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -271,13 +271,13 @@ const AdminUserManagement: React.FC = () => {
                               value={ws.role}
                               onChange={(e) => handleWorkspaceChange(ws.workspaceId, e.target.value as string)}
                             >
-                              <MenuItem value="instructor">Instructor</MenuItem>
-                              <MenuItem value="user">User</MenuItem>
+                              <MenuItem value="instructor">講師</MenuItem>
+                              <MenuItem value="user">一般ユーザー</MenuItem>
                             </Select>
                           </FormControl>
                         </TableCell>
                         <TableCell>
-                          <Button onClick={() => handleRemoveWorkspace(ws.workspaceId)} color="secondary">Remove</Button>
+                          <Button onClick={() => handleRemoveWorkspace(ws.workspaceId)} color="secondary">削除</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -287,7 +287,7 @@ const AdminUserManagement: React.FC = () => {
               <Grid container spacing={2} alignItems="center" style={{ marginTop: '16px' }}>
                 <Grid item xs={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Add Workspace</InputLabel>
+                    <InputLabel>ワークスペース追加</InputLabel>
                     <Select
                       value={newWorkspace}
                       onChange={(e) => setNewWorkspace(e.target.value as string)}
@@ -302,23 +302,23 @@ const AdminUserManagement: React.FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <FormControl fullWidth>
-                    <InputLabel>Role</InputLabel>
+                    <InputLabel>権限</InputLabel>
                     <Select
                       value={newRole}
                       onChange={(e) => setNewRole(e.target.value as string)}
                     >
-                      <MenuItem value="instructor">Instructor</MenuItem>
-                      <MenuItem value="user">User</MenuItem>
+                      <MenuItem value="instructor">講師</MenuItem>
+                      <MenuItem value="user">一般ユーザー</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={2}>
-                  <Button onClick={handleAddWorkspace} color="primary" variant="contained">Add</Button>
+                  <Button onClick={handleAddWorkspace} color="primary" variant="contained">追加</Button>
                 </Grid>
               </Grid>
               <DialogActions>
-                <Button onClick={handleClose} color="primary">Cancel</Button>
-                <Button type="submit" color="primary">Update User</Button>
+                <Button onClick={handleClose} color="primary">キャンセル</Button>
+                <Button type="submit" color="primary">更新</Button>
               </DialogActions>
             </form>
           )}
@@ -332,7 +332,7 @@ const AdminUserManagement: React.FC = () => {
         handleRequestSort={handleRequestSort}
         handleEditUser={handleEditUser}
         handleDeleteUser={handleDeleteUser}
-        title="Admin Users"
+        title="管理者ユーザー"
       />
 
       <UserManagementTable
@@ -342,7 +342,7 @@ const AdminUserManagement: React.FC = () => {
         handleRequestSort={handleRequestSort}
         handleEditUser={handleEditUser}
         handleDeleteUser={handleDeleteUser}
-        title="Unassigned Users"
+        title="未割り当てユーザー"
       />
 
       {Object.keys(workspaceUsers).map(workspaceId => (
@@ -354,7 +354,7 @@ const AdminUserManagement: React.FC = () => {
           handleRequestSort={handleRequestSort}
           handleEditUser={handleEditUser}
           handleDeleteUser={handleDeleteUser}
-          title={`Workspace: ${workspaceId}`}
+          title={`ワークスペース: ${workspaceId}`}
         />
       ))}
     </Container>

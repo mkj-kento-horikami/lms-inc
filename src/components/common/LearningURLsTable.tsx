@@ -29,18 +29,18 @@ const LearningURLsTable: React.FC<LearningURLsTableProps> = ({ learningResources
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Learning URLs</Typography>
+      <Typography variant="h4" gutterBottom>学習教材</Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Category</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
+              <TableCell>カテゴリー</TableCell>
+              <TableCell>タイトル</TableCell>
+              <TableCell>説明</TableCell>
               <TableCell>URL</TableCell>
-              <TableCell>Click Count</TableCell>
-              <TableCell>Last Clicked</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>クリック数</TableCell>
+              <TableCell>最終アクセス</TableCell>
+              <TableCell>ステータス</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,17 +57,17 @@ const LearningURLsTable: React.FC<LearningURLsTableProps> = ({ learningResources
                     </Button>
                   </TableCell>
                   <TableCell>{record ? record.clickCount : 0}</TableCell>
-                  <TableCell>{record ? new Date(record.timestamp).toLocaleString() : 'Never'}</TableCell>
+                  <TableCell>{record ? new Date(record.timestamp).toLocaleString() : 'なし'}</TableCell>
                   <TableCell>
                     {record ? (
                       <Select
                         value={record.status}
                         onChange={(e) => handleStatusChange(record.id, e.target.value as 'completed' | 'not completed')}
                       >
-                        <MenuItem value="completed">Completed</MenuItem>
-                        <MenuItem value="not completed">Not Completed</MenuItem>
+                        <MenuItem value="completed">完了</MenuItem>
+                        <MenuItem value="not completed">未完了</MenuItem>
                       </Select>
-                    ) : 'No Record'}
+                    ) : '記録なし'}
                   </TableCell>
                 </TableRow>
               );

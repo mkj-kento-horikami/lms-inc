@@ -41,7 +41,7 @@ const InstructorLearningRecords: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>読み込み中...</div>;
   }
 
   return (

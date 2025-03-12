@@ -41,7 +41,7 @@ const Header: React.FC = () => {
 
   const handleCopyInviteLink = () => {
     navigator.clipboard.writeText(inviteLink);
-    alert('Invite link copied to clipboard');
+    alert('招待リンクをコピーしました');
   };
 
   return (
@@ -55,8 +55,8 @@ const Header: React.FC = () => {
             <>
               {inviteLink && (
                 <Box style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-                  <Typography variant="body1" style={{ color: '#fff', marginRight: '10px' }}>Invite Link:</Typography>
-                  <Tooltip title="Copy Invite Link">
+                  <Typography variant="body1" style={{ color: '#fff', marginRight: '10px' }}>招待リンク：</Typography>
+                  <Tooltip title="招待リンクをコピー">
                     <Typography variant="body1" style={{ color: '#fff', cursor: 'pointer' }} onClick={handleCopyInviteLink}>
                       {inviteLink}
                     </Typography>
@@ -80,7 +80,7 @@ const Header: React.FC = () => {
                   ))}
                 </Select>
               </FormControl>
-              <Button onClick={handleLogout} variant="contained" style={{ backgroundColor: '#808080', color: '#fff', marginLeft: '20px' }}>Logout</Button>
+              <Button onClick={handleLogout} variant="contained" style={{ backgroundColor: '#808080', color: '#fff', marginLeft: '20px' }}>ログアウト</Button>
             </>
           )}
         </Box>
@@ -90,46 +90,46 @@ const Header: React.FC = () => {
           <ul className="nav-list">
             {!user && (
               <>
-                <li className="nav-item"><Link to="/login" className="nav-link">Login</Link></li>
-                <li className="nav-item"><Link to="/signup" className="nav-link">Signup</Link></li>
+                <li className="nav-item"><Link to="/login" className="nav-link">ログイン</Link></li>
+                <li className="nav-item"><Link to="/signup" className="nav-link">新規登録</Link></li>
               </>
             )}
             {selectedWorkspace && (
               <>
                 {selectedWorkspace.role === 'admin' && (
                   <>
-                    <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">Admin Dashboard</Link></li>
-                    <li className="nav-item"><Link to="/admin/user-management" className="nav-link">User Management</Link></li>
-                    <li className="nav-item"><Link to="/admin/workspace-management" className="nav-link">Workspace Management</Link></li>
-                    <li className="nav-item"><Link to="/admin/learning-url-management" className="nav-link">Learning URL Management</Link></li>
-                    <li className="nav-item"><Link to="/admin/learning-records" className="nav-link">Learning Records</Link></li>
+                    <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">管理者ダッシュボード</Link></li>
+                    <li className="nav-item"><Link to="/admin/user-management" className="nav-link">ユーザー管理</Link></li>
+                    <li className="nav-item"><Link to="/admin/workspace-management" className="nav-link">ワークスペース管理</Link></li>
+                    <li className="nav-item"><Link to="/admin/learning-url-management" className="nav-link">学習URL管理</Link></li>
+                    <li className="nav-item"><Link to="/admin/learning-records" className="nav-link">学習記録</Link></li>
                   </>
                 )}
                 {selectedWorkspace.role === 'instructor' && (
                   <>
-                    <li className="nav-item"><Link to="/instructor/dashboard" className="nav-link">Instructor Dashboard</Link></li>
-                    <li className="nav-item"><Link to="/instructor/learning-urls" className="nav-link">Learning URLs</Link></li>
-                    <li className="nav-item"><Link to="/instructor/user-management" className="nav-link">User Management</Link></li>
-                    <li className="nav-item"><Link to="/instructor/learning-records" className="nav-link">Learning Records</Link></li>
+                    <li className="nav-item"><Link to="/instructor/dashboard" className="nav-link">講師ダッシュボード</Link></li>
+                    <li className="nav-item"><Link to="/instructor/learning-urls" className="nav-link">学習教材</Link></li>
+                    <li className="nav-item"><Link to="/instructor/user-management" className="nav-link">ユーザー管理</Link></li>
+                    <li className="nav-item"><Link to="/instructor/learning-records" className="nav-link">学習記録</Link></li>
                   </>
                 )}
                 {selectedWorkspace.role === 'user' && (
                   <>
-                    <li className="nav-item"><Link to="/user/dashboard" className="nav-link">User Dashboard</Link></li>
-                    <li className="nav-item"><Link to="/user/learning-urls" className="nav-link">Learning URLs</Link></li>
-                    <li className="nav-item"><Link to="/user/learning-records" className="nav-link">Learning Records</Link></li>
+                    <li className="nav-item"><Link to="/user/dashboard" className="nav-link">マイページ</Link></li>
+                    <li className="nav-item"><Link to="/user/learning-urls" className="nav-link">学習教材</Link></li>
+                    <li className="nav-item"><Link to="/user/learning-records" className="nav-link">学習記録</Link></li>
                   </>
                 )}
               </>
             )}
             {isAdmin && !selectedWorkspace && (
               <>
-                <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">Admin Dashboard</Link></li>
-                <li className="nav-item"><Link to="/admin/learning-urls" className="nav-link">Learning URLs</Link></li>
-                <li className="nav-item"><Link to="/admin/user-management" className="nav-link">User Management</Link></li>
-                <li className="nav-item"><Link to="/admin/workspace-management" className="nav-link">Workspace Management</Link></li>
-                <li className="nav-item"><Link to="/admin/learning-url-management" className="nav-link">Learning URL Management</Link></li>
-                <li className="nav-item"><Link to="/admin/learning-records" className="nav-link">Learning Records</Link></li>
+                <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">管理者ダッシュボード</Link></li>
+                <li className="nav-item"><Link to="/admin/learning-urls" className="nav-link">学習教材</Link></li>
+                <li className="nav-item"><Link to="/admin/user-management" className="nav-link">ユーザー管理</Link></li>
+                <li className="nav-item"><Link to="/admin/workspace-management" className="nav-link">ワークスペース管理</Link></li>
+                <li className="nav-item"><Link to="/admin/learning-url-management" className="nav-link">学習URL管理</Link></li>
+                <li className="nav-item"><Link to="/admin/learning-records" className="nav-link">学習記録</Link></li>
               </>
             )}
           </ul>

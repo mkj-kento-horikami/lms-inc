@@ -47,7 +47,7 @@ const LearningRecordsTable: React.FC<LearningRecordsTableProps> = ({
                 direction={orderBy === 'workspaceName' ? order : 'asc'}
                 onClick={() => handleRequestSort('workspaceName')}
               >
-                Workspace
+                ワークスペース
               </TableSortLabel>
             </TableCell>
             <TableCell>
@@ -56,17 +56,17 @@ const LearningRecordsTable: React.FC<LearningRecordsTableProps> = ({
                 direction={orderBy === 'userName' ? order : 'asc'}
                 onClick={() => handleRequestSort('userName')}
               >
-                User Name
+                ユーザー名
               </TableSortLabel>
             </TableCell>
-            <TableCell>Category</TableCell>
+            <TableCell>カテゴリー</TableCell>
             <TableCell>
               <TableSortLabel
                 active={orderBy === 'urlTitle'}
                 direction={orderBy === 'urlTitle' ? order : 'asc'}
                 onClick={() => handleRequestSort('urlTitle')}
               >
-                URL Title
+                URLタイトル
               </TableSortLabel>
             </TableCell>
             <TableCell>URL</TableCell>
@@ -76,11 +76,11 @@ const LearningRecordsTable: React.FC<LearningRecordsTableProps> = ({
                 direction={orderBy === 'timestamp' ? order : 'asc'}
                 onClick={() => handleRequestSort('timestamp')}
               >
-                Timestamp
+                日時
               </TableSortLabel>
             </TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Click Count</TableCell>
+            <TableCell>ステータス</TableCell>
+            <TableCell>クリック数</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -22,7 +22,7 @@ const WorkspaceSelector: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Workspace Selector</Typography>
+      <Typography variant="h4" gutterBottom>ワークスペース選択</Typography>
       <FormControl variant="outlined" fullWidth>
         <Select
           value={selectedWorkspace ? `${selectedWorkspace.workspaceId}-${selectedWorkspace.role}` : ''}

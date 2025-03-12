@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert('You have been logged in.');
+      alert('ログインしました。');
       navigate('/workspace-selector');
     } catch (error: any) {
       setError('ログインに失敗しました。');
@@ -22,10 +22,10 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>ログイン</h2>
       <form onSubmit={handleLogin}>
         <div>
-          <label>Email</label>
+          <label>メールアドレス</label>
           <input
             type="email"
             value={email}
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
           />
         </div>
         <div>
-          <label>Password</label>
+          <label>パスワード</label>
           <input
             type="password"
             value={password}
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">ログイン</button>
       </form>
       {error && <p>{error}</p>}
     </div>

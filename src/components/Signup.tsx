@@ -66,35 +66,35 @@ const Signup: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Signup</Typography>
+      <Typography variant="h4" gutterBottom>新規登録</Typography>
       {error && <Alert severity="error">{error}</Alert>}
       {success ? (
-        <Alert severity="success">サインアップに成功しました！</Alert>
+        <Alert severity="success">アカウントの作成が完了しました！</Alert>
       ) : (
         <form onSubmit={handleSignup}>
           <TextField
-            label="Name"
+            label="お名前"
             value={name}
             onChange={(e) => setName(e.target.value)}
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Email"
+            label="メールアドレス"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Password"
+            label="パスワード"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             fullWidth
             margin="normal"
           />
-          <Button type="submit" variant="contained" color="primary">Signup</Button>
+          <Button type="submit" variant="contained" color="primary">アカウント作成</Button>
         </form>
       )}
     </Container>
