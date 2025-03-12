@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent, MouseEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import {
   collection,
   getDocs,
@@ -77,11 +77,6 @@ const LearningURLManagement: React.FC = () => {
       ...newLearningUrl,
       contents: newContents
     });
-  };
-
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleAddLearningUrl();
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Omit<LearningURL, 'id' | 'contents'>) => {
