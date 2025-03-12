@@ -18,10 +18,11 @@ import UserLearningRecords from './user/LearningRecords';
 import UserLearningURLs from './user/LearningURLs';
 import Header from './Header';
 import WorkspaceSelector from './WorkspaceSelector';
+import ProtectedRoute from './ProtectedRoute';
 import { WorkspaceProvider } from '../contexts/WorkspaceContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { Container } from '@mui/material';
-import '../styles/App.css'; // パスが正しいか確認
+import '../styles/App.css';
 
 const App: React.FC = () => {
   return (
@@ -33,24 +34,131 @@ const App: React.FC = () => {
             <Container>
               <main>
                 <Routes>
+                  {/* 認証不要のルート */}
                   <Route path="/invite/:inviteId" element={<Signup />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/password-reset" element={<PasswordReset />} />
-                  <Route path="/workspace-selector" element={<WorkspaceSelector />} />
-                  <Route path="/workspace/:workspaceId" element={<UserDashboard />} />
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/user-management" element={<UserManagement />} />
-                  <Route path="/admin/workspace-management" element={<WorkspaceManagement />} />
-                  <Route path="/admin/learning-url-management" element={<LearningURLManagement />} />
-                  <Route path="/admin/learning-records" element={<LearningRecords />} />
-                  <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
-                  <Route path="/instructor/user-management" element={<InstructorUserManagement />} />
-                  <Route path="/instructor/learning-records" element={<InstructorLearningRecords />} />
-                  <Route path="/instructor/learning-urls" element={<InstructorLearningURLs />} />
-                  <Route path="/user/dashboard" element={<UserDashboard />} />
-                  <Route path="/user/learning-records" element={<UserLearningRecords />} />
-                  <Route path="/user/learning-urls" element={<UserLearningURLs />} />
+
+                  {/* 管理者用ルート */}
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/user-management"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <UserManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/workspace-management"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <WorkspaceManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/learning-url-management"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <LearningURLManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/learning-records"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <LearningRecords />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* インストラクター用ルート */}
+                  <Route
+                    path="/instructor/dashboard"
+                    element={
+                      <ProtectedRoute requiredRole="instructor">
+                        <InstructorDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/instructor/user-management"
+                    element={
+                      <ProtectedRoute requiredRole="instructor">
+                        <InstructorUserManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/instructor/learning-records"
+                    element={
+                      <ProtectedRoute requiredRole="instructor">
+                        <InstructorLearningRecords />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/instructor/learning-urls"
+                    element={
+                      <ProtectedRoute requiredRole="instructor">
+                        <InstructorLearningURLs />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* ユーザー用ルート */}
+                  <Route
+                    path="/workspace-selector"
+                    element={
+                      <ProtectedRoute>
+                        <WorkspaceSelector />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/workspace/:workspaceId"
+                    element={
+                      <ProtectedRoute>
+                        <UserDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/user/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <UserDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/user/learning-records"
+                    element={
+                      <ProtectedRoute>
+                        <UserLearningRecords />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/user/learning-urls"
+                    element={
+                      <ProtectedRoute>
+                        <UserLearningURLs />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* デフォルトルート */}
                   <Route path="/" element={<Navigate to="/login" />} />
                 </Routes>
               </main>
