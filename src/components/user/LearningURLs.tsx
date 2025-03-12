@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Typography } from '@mui/material';
 import { collection, getDocs, updateDoc, doc, addDoc, query, where } from 'firebase/firestore';
 import { db, auth } from '../../firebaseConfig';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
@@ -15,8 +16,15 @@ const LearningURLs: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!selectedWorkspace) return;
+
       try {
-        const learningURLsSnapshot = await getDocs(collection(db, 'learningUrls'));
+        // ワークスペースでフィルタリングしたクエリを作成
+        const learningURLsQuery = query(
+          collection(db, 'learningUrls'),
+          where('workspaceId', '==', selectedWorkspace.workspaceId)
+        );
+        const learningURLsSnapshot = await getDocs(learningURLsQuery);
         const learningURLsData = learningURLsSnapshot.docs.map(doc => {
           const data = doc.data() as LearningURL;
           return {
@@ -50,12 +58,14 @@ const LearningURLs: React.FC = () => {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, selectedWorkspace]);
 
-  const handleClick = async (resource: LearningURL) => {
+  const handleClick = async (resource: LearningURL, contentUrl: string) => {
     if (!user || !selectedWorkspace) return;
 
-    const existingRecord = learningRecords.find(record => record.urlId === resource.id);
+    const existingRecord = learningRecords.find(record =>
+      record.urlId === resource.id && record.url === contentUrl
+    );
 
     if (existingRecord) {
       const recordRef = doc(db, 'learningRecords', existingRecord.id);
@@ -79,7 +89,7 @@ const LearningURLs: React.FC = () => {
         workspaceName: selectedWorkspace.name,
         urlId: resource.id,
         urlTitle: resource.mainTitle,
-        url: resource.url,
+        url: contentUrl,
         category: resource.category, // category プロパティを追加
         status: 'completed',
         timestamp: new Date().toISOString(),
@@ -98,6 +108,26 @@ const LearningURLs: React.FC = () => {
       prevRecords.map(record => (record.id === recordId ? { ...record, status: newStatus } : record))
     );
   };
+
+  if (!selectedWorkspace) {
+    return (
+      <Container>
+        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>
+          ワークスペースを選択してください
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (learningURLs.length === 0) {
+    return (
+      <Container>
+        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>
+          このワークスペースには学習教材が登録されていません
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <LearningURLsTable
