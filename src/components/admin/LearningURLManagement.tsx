@@ -37,10 +37,12 @@ import { Edit, Delete, Add, Remove } from '@mui/icons-material';
 import { LearningURL, Content } from '../../types/LearningURL';
 import Papa from 'papaparse';
 import { useAuth } from '../../contexts/AuthContext';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
 import '../../styles.css';
 
 const LearningURLManagement: React.FC = () => {
   const { currentUser } = useAuth();
+  const { selectedWorkspace } = useWorkspace();
   const [learningUrls, setLearningUrls] = useState<LearningURL[]>([]);
   const [newLearningUrl, setNewLearningUrl] = useState<Omit<LearningURL, 'id'>>({
     category: '',
@@ -80,35 +82,82 @@ const LearningURLManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchLearningUrls = async () => {
+      if (!selectedWorkspace) {
+        setError('ワークスペースが選択されていません。');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
-        const querySnapshot = await getDocs(collection(db, 'learningUrls'));
-        const learningUrlsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as LearningURL));
-        setLearningUrls(learningUrlsData);
+        
+        // ワークスペースIDに基づいてクエリを構築
+        const querySnapshot = await getDocs(
+          collection(db, 'learningUrls')
+        );
+        
+        if (!isMounted) return;
+
+        const learningUrlsData = querySnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as LearningURL))
+          .filter(url => url.workspaceId === selectedWorkspace.workspaceId);
+        
+        if (isMounted) {
+          setLearningUrls(learningUrlsData);
+          setError(null);
+        }
       } catch (err) {
         console.error('Error fetching learning URLs:', err);
-        setError('データの取得中にエラーが発生しました。');
+        if (isMounted) {
+          setError('データの取得中にエラーが発生しました。再度お試しください。');
+          setLearningUrls([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchLearningUrls();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedWorkspace]);
 
   const handleAddLearningUrl = async () => {
+    if (!selectedWorkspace) {
+      setError('ワークスペースが選択されていません。');
+      return;
+    }
+
+    if (!newLearningUrl.category || !newLearningUrl.mainTitle) {
+      setError('カテゴリーとメインタイトルは必須項目です。');
+      return;
+    }
+
     try {
       setError(null);
-      const docRef = await addDoc(collection(db, 'learningUrls'), {
+      setIsLoading(true);
+
+      const newLearningUrlData = {
         ...newLearningUrl,
-        createdBy: currentUser?.uid
-      });
-      setLearningUrls([...learningUrls, { id: docRef.id, ...newLearningUrl, createdBy: currentUser?.uid }]);
+        workspaceId: selectedWorkspace.workspaceId,
+        createdBy: currentUser?.uid,
+        createdAt: new Date().toISOString()
+      };
+
+      const docRef = await addDoc(collection(db, 'learningUrls'), newLearningUrlData);
+      
+      setLearningUrls([...learningUrls, { id: docRef.id, ...newLearningUrlData }]);
       setNewLearningUrl({
         category: '',
         mainTitle: '',
@@ -116,9 +165,12 @@ const LearningURLManagement: React.FC = () => {
         url: '',
         contents: [{ title: '', description: '', url: '' }]
       });
+      setError(null);
     } catch (err) {
       console.error('Error adding learning URL:', err);
-      setError('データの追加中にエラーが発生しました。');
+      setError('データの追加中にエラーが発生しました。再度お試しください。');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,18 +180,40 @@ const LearningURLManagement: React.FC = () => {
   };
 
   const handleUpdateLearningUrl = async () => {
+    if (!selectedWorkspace) {
+      setError('ワークスペースが選択されていません。');
+      return;
+    }
+
     if (editingLearningUrl) {
+      if (!editingLearningUrl.category || !editingLearningUrl.mainTitle) {
+        setError('カテゴリーとメインタイトルは必須項目です。');
+        return;
+      }
+
       try {
         setError(null);
+        setIsLoading(true);
+
         const learningUrlRef = doc(db, 'learningUrls', editingLearningUrl.id);
         const { id, ...updatedLearningUrl } = editingLearningUrl;
-        await updateDoc(learningUrlRef, updatedLearningUrl);
-        setLearningUrls(learningUrls.map(lu => (lu.id === editingLearningUrl.id ? editingLearningUrl : lu)));
+        
+        const updateData = {
+          ...updatedLearningUrl,
+          workspaceId: selectedWorkspace.workspaceId,
+          updatedAt: new Date().toISOString()
+        };
+
+        await updateDoc(learningUrlRef, updateData);
+        setLearningUrls(learningUrls.map(lu => (lu.id === editingLearningUrl.id ? { ...editingLearningUrl, ...updateData } : lu)));
         setEditingLearningUrl(null);
         setOpen(false);
+        setError(null);
       } catch (err) {
         console.error('Error updating learning URL:', err);
-        setError('データの更新中にエラーが発生しました。');
+        setError('データの更新中にエラーが発生しました。再度お試しください。');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -161,8 +235,14 @@ const LearningURLManagement: React.FC = () => {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedWorkspace) {
+      setError('ワークスペースが選択されていません。');
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (file) {
+      setIsLoading(true);
       Papa.parse(file, {
         header: true,
         complete: async (results) => {
@@ -178,6 +258,10 @@ const LearningURLManagement: React.FC = () => {
             }>;
 
             const groupedData = data.reduce((acc, row) => {
+              if (!row.category || !row.mainTitle) {
+                return acc; // 必須フィールドが空の行はスキップ
+              }
+
               const key = `${row.category}-${row.mainTitle}`;
               if (!acc[key]) {
                 acc[key] = {
@@ -185,35 +269,52 @@ const LearningURLManagement: React.FC = () => {
                   mainTitle: row.mainTitle,
                   mainDescription: row.mainDescription || '',
                   url: '',
-                  contents: []
+                  contents: [],
+                  workspaceId: selectedWorkspace.workspaceId,
+                  createdBy: currentUser?.uid,
+                  createdAt: new Date().toISOString()
                 };
               }
-              acc[key].contents.push({
-                title: row.contentTitle,
-                description: row.contentDescription || '',
-                url: row.contentUrl
-              });
+              if (row.contentTitle && row.contentUrl) {
+                acc[key].contents.push({
+                  title: row.contentTitle,
+                  description: row.contentDescription || '',
+                  url: row.contentUrl
+                });
+              }
               return acc;
             }, {} as Record<string, Omit<LearningURL, 'id'>>);
 
             for (const learningUrl of Object.values(groupedData)) {
-              await addDoc(collection(db, 'learningUrls'), {
-                ...learningUrl,
-                createdBy: currentUser?.uid
-              });
+              await addDoc(collection(db, 'learningUrls'), learningUrl);
             }
 
+            // 現在のワークスペースのデータのみを再取得
             const querySnapshot = await getDocs(collection(db, 'learningUrls'));
-            const learningUrlsData = querySnapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            })) as LearningURL[];
+            const learningUrlsData = querySnapshot.docs
+              .map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              } as LearningURL))
+              .filter(url => url.workspaceId === selectedWorkspace.workspaceId);
+
             setLearningUrls(learningUrlsData);
+            setError(null);
+            
+            // ファイル入力をリセット
+            event.target.value = '';
           } catch (err) {
             console.error('Error uploading CSV:', err);
-            setError('CSVのアップロード中にエラーが発生しました。');
+            setError('CSVのアップロード中にエラーが発生しました。再度お試しください。');
+          } finally {
+            setIsLoading(false);
           }
         },
+        error: (error) => {
+          console.error('CSV parse error:', error);
+          setError('CSVファイルの解析中にエラーが発生しました。');
+          setIsLoading(false);
+        }
       });
     }
   };

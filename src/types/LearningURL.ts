@@ -14,4 +14,6 @@ export interface LearningURL {
   description?: string;
   contents: Content[];
   createdBy?: string;
+  workspaceId?: string;
+  createdAt?: string;
 }
