@@ -8,7 +8,14 @@ import {
   TableRow,
   Paper,
   TableSortLabel,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Box,
+  Chip,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { LearningRecord } from '../../types/LearningRecord';
 
 interface LearningRecordsTableProps {
@@ -18,91 +25,145 @@ interface LearningRecordsTableProps {
   handleRequestSort: (property: keyof LearningRecord) => void;
 }
 
+interface GroupedRecord {
+  mainTitle: string;
+  category: string;
+  userName: string;
+  workspaceName: string;
+  status: 'completed' | 'not completed';
+  contents: {
+    url: string;
+    timestamp: string;
+    clickCount: number;
+  }[];
+}
+
 const LearningRecordsTable: React.FC<LearningRecordsTableProps> = ({
   learningRecords,
   order,
   orderBy,
   handleRequestSort,
 }) => {
-  const sortedRecords = [...learningRecords].sort((a, b) => {
+  // レコードをメインタイトルでグループ化
+  const groupedRecords = learningRecords.reduce<GroupedRecord[]>((acc, record) => {
+    const existingGroup = acc.find(group =>
+      group.mainTitle === record.urlTitle &&
+      group.userName === record.userName &&
+      group.workspaceName === record.workspaceName
+    );
+
+    if (existingGroup) {
+      existingGroup.contents.push({
+        url: record.url,
+        timestamp: record.timestamp,
+        clickCount: record.clickCount
+      });
+      // 最新のステータスを使用
+      if (new Date(record.timestamp) > new Date(existingGroup.contents[0].timestamp)) {
+        existingGroup.status = record.status;
+      }
+    } else {
+      acc.push({
+        mainTitle: record.urlTitle,
+        category: record.category,
+        userName: record.userName,
+        workspaceName: record.workspaceName,
+        status: record.status,
+        contents: [{
+          url: record.url,
+          timestamp: record.timestamp,
+          clickCount: record.clickCount
+        }]
+      });
+    }
+    return acc;
+  }, []);
+
+  // グループ化されたレコードをソート
+  const sortedGroups = [...groupedRecords].sort((a, b) => {
     if (orderBy === 'timestamp') {
       return order === 'asc'
-        ? new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        : new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+        ? new Date(a.contents[0].timestamp).getTime() - new Date(b.contents[0].timestamp).getTime()
+        : new Date(b.contents[0].timestamp).getTime() - new Date(a.contents[0].timestamp).getTime();
     } else {
+      const aValue = a[orderBy as keyof Omit<GroupedRecord, 'contents'>] || '';
+      const bValue = b[orderBy as keyof Omit<GroupedRecord, 'contents'>] || '';
       return order === 'asc'
-        ? (a[orderBy] < b[orderBy] ? -1 : 1)
-        : (a[orderBy] > b[orderBy] ? -1 : 1);
+        ? (aValue < bValue ? -1 : 1)
+        : (bValue < aValue ? -1 : 1);
     }
   });
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === 'workspaceName'}
-                direction={orderBy === 'workspaceName' ? order : 'asc'}
-                onClick={() => handleRequestSort('workspaceName')}
-              >
-                ワークスペース
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === 'userName'}
-                direction={orderBy === 'userName' ? order : 'asc'}
-                onClick={() => handleRequestSort('userName')}
-              >
-                ユーザー名
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>カテゴリー</TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === 'urlTitle'}
-                direction={orderBy === 'urlTitle' ? order : 'asc'}
-                onClick={() => handleRequestSort('urlTitle')}
-              >
-                URLタイトル
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>URL</TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === 'timestamp'}
-                direction={orderBy === 'timestamp' ? order : 'asc'}
-                onClick={() => handleRequestSort('timestamp')}
-              >
-                日時
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>ステータス</TableCell>
-            <TableCell>クリック数</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedRecords.map((record) => (
-            <TableRow key={`${record.userId}_${record.urlId}`}>
-              <TableCell>{record.workspaceName}</TableCell>
-              <TableCell>{record.userName}</TableCell>
-              <TableCell>{record.category}</TableCell>
-              <TableCell>{record.urlTitle}</TableCell>
-              <TableCell>
-                <a href={record.url} target="_blank" rel="noopener noreferrer">
-                  {record.url}
-                </a>
-              </TableCell>
-              <TableCell>{new Date(record.timestamp).toLocaleString()}</TableCell>
-              <TableCell>{record.status}</TableCell>
-              <TableCell>{record.clickCount}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      {sortedGroups.map((group, index) => (
+        <Accordion key={index} sx={{ mb: 2 }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            sx={{
+              '& .MuiAccordionSummary-content': {
+                margin: '12px 0',
+              }
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+              <Box sx={{ flex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Typography variant="h6">{group.mainTitle}</Typography>
+                  <Chip
+                    label={group.category}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                  <Chip
+                    label={group.status === 'completed' ? '完了' : '未完了'}
+                    size="small"
+                    color={group.status === 'completed' ? 'success' : 'warning'}
+                  />
+                </Box>
+                <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                  {group.workspaceName} - {group.userName}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="body2" color="textSecondary">
+                  総クリック数: {group.contents.reduce((sum, content) => sum + content.clickCount, 0)}
+                </Typography>
+              </Box>
+            </Box>
+          </AccordionSummary>
+          <AccordionDetails>
+            <TableContainer component={Paper} variant="outlined">
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>URL</TableCell>
+                    <TableCell align="right">クリック数</TableCell>
+                    <TableCell align="right">最終アクセス</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {group.contents.map((content, contentIndex) => (
+                    <TableRow key={contentIndex}>
+                      <TableCell>
+                        <a href={content.url} target="_blank" rel="noopener noreferrer">
+                          {content.url}
+                        </a>
+                      </TableCell>
+                      <TableCell align="right">{content.clickCount}</TableCell>
+                      <TableCell align="right">
+                        {new Date(content.timestamp).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </Box>
   );
 };
 
