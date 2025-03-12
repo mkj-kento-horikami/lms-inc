@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 
 // Firebase設定
 const firebaseConfig = {
@@ -19,5 +19,11 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// 認証の永続性を設定
+setPersistence(auth, browserSessionPersistence)
+  .catch((error) => {
+    console.error("認証の永続性設定エラー:", error);
+  });
 
 export { db, auth, analytics };
