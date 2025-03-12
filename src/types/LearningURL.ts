@@ -6,10 +6,12 @@ export interface Content {
 
 export interface LearningURL {
   id: string;
+  url: string;
   category: string;
   mainTitle: string;
   mainDescription: string;
+  title?: string;
+  description?: string;
   contents: Content[];
   createdBy?: string;
-  title?: string;
 }

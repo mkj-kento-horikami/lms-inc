@@ -48,6 +48,7 @@ const LearningURLManagement: React.FC = () => {
     category: '',
     mainTitle: '',
     mainDescription: '',
+    url: '',
     contents: [{ title: '', description: '', url: '' }]
   });
   const [editingLearningUrl, setEditingLearningUrl] = useState<LearningURL | null>(null);
@@ -166,6 +167,7 @@ const LearningURLManagement: React.FC = () => {
                 category: row.category,
                 mainTitle: row.mainTitle,
                 mainDescription: row.mainDescription || '',
+                url: '',
                 contents: []
               };
             }
