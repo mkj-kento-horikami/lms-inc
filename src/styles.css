@@ -1,12 +1,23 @@
 .table-head-cell {
-  color: #edededf0; /* 薄いグレー */
-  background-color: #fafafaf0; /* 薄いグレー */
+  color: #333333 !important; /* より濃い色に変更 */
+  background-color: #f5f5f5 !important;
+  font-weight: 600 !important;
+  padding: 16px !important;
 }
 
 .table-row {
-  height: 20px; /* 縦の高さをさらに小さく */
+  height: 48px !important; /* Material-UIの標準的な行の高さ */
+}
+
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
 }
 
 .icon-button {
-  padding: 4px; /* アイコンボタンのパディングを小さく */
+  padding: 8px !important;
+  margin: 0 4px !important;
+}
+
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
 }
