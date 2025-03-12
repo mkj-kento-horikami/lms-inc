@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && userRole !== requiredRole) {
+  if (requiredRole && userRole?.toLowerCase() !== requiredRole.toLowerCase()) {
     return (
       <Container sx={{ mt: 4 }}>
         <Paper elevation={2} sx={{ p: 3 }}>
