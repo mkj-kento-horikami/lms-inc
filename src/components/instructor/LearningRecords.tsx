@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db, auth } from '../../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { LearningRecord } from '../../types/LearningRecord';
 import LearningRecordsTable from '../common/LearningRecordsTable';

@@ -175,17 +175,6 @@ const AdminUserManagement: React.FC = () => {
     setOrderBy(property);
   };
 
-  const sortedUsers = [...users].sort((a, b) => {
-    const aValue = a[orderBy];
-    const bValue = b[orderBy];
-
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return (order === 'asc' ? 1 : -1) * aValue.localeCompare(bValue);
-    }
-
-    return 0;
-  });
-
   return (
     <Container>
       <Typography variant="h4" gutterBottom>User Management</Typography>
