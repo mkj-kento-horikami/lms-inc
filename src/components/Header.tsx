@@ -11,8 +11,6 @@ const Header: React.FC = () => {
   const user = auth.currentUser;
   const navigate = useNavigate();
   const [inviteLink, setInviteLink] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   useEffect(() => {
     const fetchInviteLink = async () => {
       if (selectedWorkspace) {
@@ -44,14 +42,6 @@ const Header: React.FC = () => {
   const handleCopyInviteLink = () => {
     navigator.clipboard.writeText(inviteLink);
     alert('Invite link copied to clipboard');
-  };
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
   };
 
   return (

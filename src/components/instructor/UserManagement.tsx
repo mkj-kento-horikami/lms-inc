@@ -22,7 +22,7 @@ import {
   CardContent,
   CardActions,
 } from '@mui/material';
-import { Edit, Delete, FileCopy } from '@mui/icons-material';
+import { FileCopy } from '@mui/icons-material';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import UserManagementTable from '../common/UserManagementTable';
 import '../../styles.css';

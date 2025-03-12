@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 import {
   Container,
   Typography,

@@ -11,7 +11,6 @@ const InstructorLearningRecords: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof LearningRecord>('timestamp');
-  const user = auth.currentUser;
 
   useEffect(() => {
     const fetchLearningRecords = async () => {
