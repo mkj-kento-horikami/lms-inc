@@ -11,7 +11,6 @@ const Header: React.FC = () => {
   const user = auth.currentUser;
   const navigate = useNavigate();
   const [inviteLink, setInviteLink] = useState<string>('');
-
   useEffect(() => {
     const fetchInviteLink = async () => {
       if (selectedWorkspace) {
